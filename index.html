@@ -4,70 +4,116 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css" integrity="sha512-1PKOgIY59xJ8Co8+NE6FZ+LOAZKjy+KY8iq0G4B3CyeY6wYHN3yt9PW0XpSriVlkMXe40PTKnXrLnZ9+fkDaog==" crossorigin="anonymous">
     <link rel="stylesheet" href="main.css">
     <title>Mobility Model Showcase</title>
   </head>
   <body>
-    <div class="container-fluid">
-      <div class="row">
-        <div class="col-md-3">
-          <div class="form-group">
-            <div class="form-group row">
-              <div class="col-md-5">Control</div>
-              <div class="col-md-auto">
-                <input type="range" min="1", max="1000", step="1">
-              </div>
+    <div class="container">
+      <div id="control-panel" class="control-panel float-left">
+        <!-- template begin -->
+        <template v-for="cluster in clusterDefines" :keys="cluster.id">
+          <div class="card bg-transparent">
+            <div class="card-header bg-transparent">
+              <h1 class="sf">Cluster #{{ cluster.id }}<button v-bind:data-cid="cluster.id" class="btn btn-link float-right sf" v-on:click="deleteCluster($event)">Delete</button></h1>
+            </div>
+            <div class="card-body">
+              <form class="form-inline">
+                <label class="form-control-label col-md-4 sf">Model</label>
+                <select name="model" class="custom-select col-md-8 sf" v-bind:data-cid="cluster.id" v-model="cluster.model">
+                  <option value="1">Random Waypoint</option>
+                  <option value="2">Reference Point Group Mobility</option>
+                </select>
+              </form>
+              <form class="form-inline">
+                <label class="form-control-label col-md-4 sf">Number of nodes</label>
+                <input class="form-control col-md-6 sf" name="range" type="range" min="1" max="100" step="1" v-model="cluster.numOfNodes">
+                <input class="form-control col-md-2 sf" name="number" type="number" min="1" max="999" step="1" v-bind:data-cid="cluster.id" v-model="cluster.numOfNodes">
+              </form>
+              <form class="form-inline">
+                <label class="form-control-label col-md-4 sf">Speed limit (upper)</label>
+                <input class="form-control col-md-6 sf" name="range" type="range" min="1" max="20" step="0.1" v-model="cluster.speedMax">
+                <input class="form-control col-md-2 sf" name="number" type="number" min="1" max="999" step="0.1" v-bind:data-cid="cluster.id" v-model="cluster.speedMax">
+              </form>
+              <form class="form-inline">
+                <label class="form-control-label col-md-4 sf">Speed limit (lower)</label>
+                <input class="form-control col-md-6 sf" name="range" type="range" min="1" max="20" step="0.1" v-model="cluster.speedMin">
+                <input class="form-control col-md-2 sf" name="number" type="number" min="1" max="999" step="0.1" v-bind:data-cid="cluster.id" v-model="cluster.speedMin">
+              </form>
+              <form class="form-inline">
+                <label class="form-control-label col-md-4 sf">Break limit (upper)</label>
+                <input class="form-control col-md-6 sf" name="range" type="range" min="1" max="30" step="1" v-model="cluster.coffeebreakMax">
+                <input class="form-control col-md-2 sf" name="number" type="number" min="1" max="999" step="1" v-bind:data-cid="cluster.id" v-model="cluster.coffeebreakMax">
+              </form>
+              <form class="form-inline">
+                <label class="form-control-label col-md-4 sf">Break limit (lower)</label>
+                <input class="form-control col-md-6 sf" name="range" type="range" min="1" max="30" step="1" v-model="cluster.coffeebreakMin">
+                <input class="form-control col-md-2 sf" name="number" type="number" min="1" max="999" step="1" v-bind:data-cid="cluster.id" v-model="cluster.coffeebreakMin">
+              </form>
+              <form class="form-inline">
+                <label class="form-control-label col-md-4 sf">Connection limit</label>
+                <input class="form-control col-md-6 sf" name="range" type="range" min="1" max="200" step="1" v-model="cluster.radius">
+                <input class="form-control col-md-2 sf" name="number" type="number" min="1" max="999" step="1" v-bind:data-cid="cluster.id" v-model="cluster.radius">
+              </form>
+              <form class="form-inline">
+                <div class="d-inline-block col-md-4 p-0 align-middle">
+                  <label class="form-control-label sf">Visible</label>
+                  <input class="form-control" type="checkbox" v-bind:data-cid="cluster.id" v-model="cluster.visible">
+                </div>
+                <div class="d-inline-block col-md-4 p-0 align-middle">
+                  <label class="form-control-label sf">Draw edges</label>
+                  <input class="form-control" type="checkbox" v-bind:data-cid="cluster.id" v-model="cluster.drawEdges">
+                </div>
+                <div class="d-inline-block col-md-4 p-0 align-middle">
+                  <label class="form-control-label sf">Super node</label>
+                  <input class="form-control" type="checkbox" v-bind:data-cid="cluster.id" v-model="cluster.superNode">
+                </div>
+              </form>
+              <form class="form-inline">
+                <div class="d-inline-block col-md-4 p-0 align-middle">
+                  <label class="form-control-label sf">Node size</label>
+                  <input class="form-control sf w-30" name="number" type="number" min="1" max="100" step="1" value="13" v-bind:data-cid="cluster.id" v-model="cluster.nodeSize">
+                </div>
+                <div class="d-inline-block col-md-4 p-0 align-middle">
+                  <label class="form-control-label sf">Edge width</label>
+                  <input class="form-control sf w-30" name="number" type="number" min="1" max="100" step="1" value="9" v-bind:data-cid="cluster.id" v-model="cluster.edgeWidth">
+                </div>
+                <div class="d-inline-block col-md-4 p-0 align-middle">
+                  <label class="form-control-label sf">Color</label>
+                  <input class="form-control w-40 mr-1 sf" name="color" type="color" value="#000000" v-bind:data-cid="cluster.id" v-model="cluster.color">
+                </div>
+              </form>
             </div>
           </div>
-          <div class="form-group">
-            <div class="form-group row">
-              <div class="col-md-5">Control</div>
-              <div class="col-md-auto">
-                <input type="range" min="1", max="1000", step="1">
+        </template>
+        <!-- template end -->
+        <button id="add-cluster-btn" type="button" class="btn btn-dark sf" v-on:click="addCluster()"><i class="fas fa-plus-square mr-2"></i>Add cluster</button>
+      </div>
+
+      <div id="control-panel-bottom" class="control-panel fixed-bottom">
+        <div class="card bg-transparent float-right">
+          <div class="card-body">
+            <form class="form-inline">
+              <div class="d-inline-block col-md-6 p-0 align-middle">
+                <label class="form-control-label sf">Field width</label>
+                <input id="field-width" class="form-control sf w-40" name="number" type="number" min="1" max="9999" step="1" value="1000" disabled>
               </div>
-            </div>
-          </div>
-          <div class="form-group">
-            <div class="form-group row">
-              <div class="col-md-5">Control</div>
-              <div class="col-md-auto">
-                <input type="range" min="1", max="1000", step="1">
+              <div class="d-inline-block col-md-6 p-0 align-middle">
+                <label class="form-control-label sf">Field height</label>
+                <input id="field-height" class="form-control sf w-40" name="number" type="number" min="1" max="9999" step="1" value="1000" disabled>
               </div>
-            </div>
+            </form>
           </div>
-          <div class="form-group">
-            <div class="form-group row">
-              <div class="col-md-5">Control</div>
-              <div class="col-md-auto">
-                <input type="range" min="1", max="1000", step="1">
-              </div>
-            </div>
-          </div>
-          <div class="form-group">
-            <div class="form-group row">
-              <div class="col-md-5">Control</div>
-              <div class="col-md-auto">
-                <input type="range" min="1", max="1000", step="1">
-              </div>
-            </div>
-          </div>
-          <div class="form-group">
-            <div class="form-group row">
-              <div class="col-md-5">Control</div>
-              <div class="col-md-auto">
-                <input type="range" min="1", max="1000", step="1">
-              </div>
-            </div>
-          </div>
-        </div>
-        <div id="showcase" class="col-md-auto">
-          <canvas id="canvas"></canvas>
         </div>
       </div>
+
+      <canvas id="canvas"></canvas>
     </div>
-    <script src="main.js"></script>
+
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12"></script>
+    <script src="main.js"></script>
   </body>
 </html>
