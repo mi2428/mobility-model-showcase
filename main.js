@@ -179,10 +179,10 @@ const ControlPanel = new Vue({
                 for (var cid of Object.keys(ClusterInstances)) {
                     if (!cdefids.includes(Number(cid))) delete ClusterInstances[cid];
                 }
-                for (var cdef of this.clusterDefines) {
-                    const cluster = ClusterInstances[cdef.id];
-                    cluster.reset(GetModelParams(cdef));
-                }
+                // for (var cdef of this.clusterDefines) {
+                //     const cluster = ClusterInstances[cdef.id];
+                //     cluster.reset(GetModelParams(cdef));
+                // }
             },
             deep: true
         }
@@ -201,6 +201,9 @@ const ControlPanel = new Vue({
             this.clusterDefines = this.clusterDefines.filter(c => c.id != targetid);
         },
     },
+    mounted: function() {
+        this.addCluster();
+    }
 });
 
 
@@ -208,31 +211,44 @@ const delta = 0.1;
 const canvas = document.getElementById('canvas');
 const context = canvas.getContext("2d");
 
-const draw = (timestamp) => {
+canvas.width = WIDTH;
+canvas.height = HEIGHT;
+
+function draw(timestamp) {
     // canvas.height = window.innerHeight;
     // canvas.width = window.innerWidth;
-    context.clearRect(0, 0, window.innerWidth, window.innerHeight);
+    context.clearRect(0, 0, WIDTH, HEIGHT);
 
-    if (Object.keys(ClusterInstances).length == 0) {
-        const text = "Mobility Model Showcase";
-        const fontsize = "32px"
-        const textwidth = context.measureText(text).width;
-        context.font = fontsize + " monospace";
-        context.fillText(text, Math.round((canvas.width - textwidth) / 2), Math.round((canvas.height - fontsize) / 2));
-        requestAnimationFrame((ts) => draw(ts));
-    }
+    // if (Object.keys(ClusterInstances).length == 0) {
+    //     const text = "Mobility Model Showcase";
+    //     const fontsize = "32px"
+    //     const textwidth = context.measureText(text).width;
+    //     context.font = fontsize + " monospace";
+    //     context.fillText(text, Math.round((canvas.width - textwidth) / 2), Math.round((canvas.height - fontsize) / 2));
+    //     requestAnimationFrame((ts) => draw(ts));
+    // }
 
-    for (var cid of Object.keys(ClusterInstances)) {
-        const cluster = ClusterInstances[cid];
-        const cdef = ControlPanel.getCluster(cid);
+
+    console.log(ClusterInstances)
+    // for (var cid of Object.keys(ClusterInstances)) {
+        // const cluster = ClusterInstances[cid];
+        // const cdef = ControlPanel.getCluster(cid);
+
+    // const rw1 = new RandomWaypointModel(GetModelParams(NewClusterDefine(1)))
+    // const rw2 = new RandomWaypointModel(GetModelParams(NewClusterDefine(2)))
+    // const clusters = [rw1, rw2]
+
+    for (var cluster of clusters) {
         const nodes = cluster.step(delta);
         for (var node of nodes) {
             context.beginPath();
-            context.fillStyle = cdef.color;
-            context.arc(node.pos.x, node.pos.y, cdef.nodeSize / 2, 0, 2 * Math.PI);
+            // context.fillStyle = cdef.color;
+            // context.arc(node.pos.x, node.pos.y, cdef.nodeSize, 0, 2 * Math.PI);
+            context.arc(node.pos.x, node.pos.y, 13, 0, 2 * Math.PI);
             context.fill();
         }
-        requestAnimationFrame((ts) => draw(ts));
+        window.requestAnimationFrame((ts) => draw(ts));
     }
-};
-requestAnimationFrame((ts) => draw(ts));
+}
+
+window.requestAnimationFrame((ts) => draw(ts));
