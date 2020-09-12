@@ -128,7 +128,7 @@ const NewClusterDefine = (cid) => {
         drawEdges: false,
         superNode: false,
         nodeSize: 13,
-        edgeWidth: 9,
+        edgeWidth: 1,
         color: color,
         fieldWidth: window.innerWidth,
         fieldHeight: window.innerHeight,
@@ -203,6 +203,17 @@ const ControlPanel = new Vue({
             const delta = 0.1;
             const canvas = document.getElementById('canvas');
             const context = canvas.getContext("2d");
+            const edges = (nodes, radius) => {
+                var e = []
+                for (var i = 0; i < nodes.length - 1; i++) {
+                    const p1 = nodes[i].pos;
+                    for (var j = i+1; j < nodes.length; j++) {
+                        const p2 = nodes[j].pos;
+                        if (distance(p1, p2) <= radius) e.push([[p1.x, p1.y], [p2.x, p2.y]]);
+                    }
+                }
+                return e;
+            };
             const draw = (timestamp) => {
                 canvas.width = window.innerWidth;
                 canvas.height = window.innerHeight;
@@ -219,11 +230,22 @@ const ControlPanel = new Vue({
                     if (!cdef.visible) continue;
                     const cluster = ClusterInstances[cid];
                     const nodes = cluster.step(delta);
+                    const radius = cdef.radius;
                     for (var node of nodes) {
                         context.beginPath();
                         context.fillStyle = cdef.color;
                         context.arc(node.pos.x, node.pos.y, cdef.nodeSize / 2, 0, 2 * Math.PI);
                         context.fill();
+                    }
+                    if (!cdef.drawEdges) continue;
+                    for (var edge of edges(nodes, radius)) {
+                        const x1 = edge[0][0], y1 = edge[0][1], x2 = edge[1][0], y2 = edge[1][1];
+                        context.beginPath();
+                        context.moveTo(x1, y1);
+                        context.lineTo(x2, y2);
+                        context.strokeStyle = cdef.color;
+                        context.lineWidth = cdef.edgeWidth;
+                        context.stroke();
                     }
                 }
                 requestAnimationFrame((ts) => draw(ts));
