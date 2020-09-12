@@ -51,7 +51,6 @@ class Node {
 
 class RandomWaypointModel {
     constructor(params) {
-        this.field_size = params.field_size;
         this.nodes = [];
         this.reset(params);
         this.dt = 0.1;
@@ -85,6 +84,7 @@ class RandomWaypointModel {
     }
 
     reset(params) {
+        this.field_size = params.field_size;
         this.coffeebreak_limit = params.coffeebreak_limit;
 
         if (this.speed_limit != params.speed_limit) {
@@ -129,7 +129,9 @@ const NewClusterDefine = (cid) => {
         superNode: false,
         nodeSize: 13,
         edgeWidth: 9,
-        color: color
+        color: color,
+        fieldWidth: window.innerWidth,
+        fieldHeight: window.innerHeight,
     };
     return cdef;
 };
@@ -139,7 +141,7 @@ const GetModelParams = (cdef) => {
         case MODEL.RandomWaypointModel:
             return {
                 n_nodes: cdef.numOfNodes,
-                field_size: { x: WIDTH, y: HEIGHT },
+                field_size: { x: cdef.fieldWidth, y: cdef.fieldHeight },
                 speed_limit: { min: cdef.speedMin, max: cdef.speedMax },
                 coffeebreak_limit: { min: cdef.coffeebreakMin, max: cdef.coffeebreakMax }
             };
@@ -158,9 +160,6 @@ const NewClusterInstance = (cdef) => {
 };
 
 var ClusterInstances = {};
-
-const WIDTH = 1000
-const HEIGHT = 1000
 
 const ControlPanel = new Vue({
     el: '#control-panel',
@@ -203,11 +202,11 @@ const ControlPanel = new Vue({
         canvasDrawing: function() {
             const delta = 0.1;
             const canvas = document.getElementById('canvas');
-            canvas.height = HEIGHT;
-            canvas.width = WIDTH;
             const context = canvas.getContext("2d");
             const draw = (timestamp) => {
-                context.clearRect(0, 0, WIDTH, HEIGHT);
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+                context.clearRect(0, 0, canvas.width, canvas.height);
                 if (Object.keys(ClusterInstances).length == 0) {
                     const text = "Mobility Model Showcase";
                     const fontsize = "32px"
@@ -216,8 +215,9 @@ const ControlPanel = new Vue({
                     context.fillText(text, Math.round((canvas.width - textwidth) / 2), Math.round((canvas.height - fontsize) / 2));
                 }
                 for (var cid of Object.keys(ClusterInstances)) {
-                    const cluster = ClusterInstances[cid];
                     const cdef = this.getCluster(cid);
+                    if (!cdef.visible) continue;
+                    const cluster = ClusterInstances[cid];
                     const nodes = cluster.step(delta);
                     for (var node of nodes) {
                         context.beginPath();

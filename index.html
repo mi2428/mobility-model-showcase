@@ -10,7 +10,7 @@
   </head>
   <body>
     <div class="container">
-      <div id="control-panel" class="control-panel float-left">
+      <div id="control-panel" class="control-panel position-fixed float-left">
         <!-- template begin -->
         <template v-for="cluster in clusterDefines" :keys="cluster.id">
           <div class="card bg-transparent">
@@ -82,6 +82,10 @@
                   <label class="form-control-label sf">Color</label>
                   <input class="form-control w-40 mr-1 sf" name="color" type="color" value="#000000" v-bind:data-cid="cluster.id" v-model="cluster.color">
                 </div>
+              </form>
+              <form class="form-inline d-none">
+                <input class="form-control col-md-2 sf" name="number" type="number" v-bind:data-cid="cluster.id" v-model="cluster.fieldWidth">
+                <input class="form-control col-md-2 sf" name="number" type="number" v-bind:data-cid="cluster.id" v-model="cluster.fieldHeight">
               </form>
             </div>
           </div>

@@ -5,6 +5,10 @@ body {
   background-repeat: repeat;
 }
 
+canvas {
+  padding: 30px;
+}
+
 .w-30 {
   width: 30% !important;
   max-width: 30% !important;
