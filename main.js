@@ -204,6 +204,7 @@ const ControlPanel = new Vue({
             const delta = 0.1;
             const canvas = document.getElementById('canvas');
             const context = canvas.getContext("2d");
+
             const edges = (nodes, radius_s, radius_u) => {
                 var e = [], ee = [];
                 for (var i = 0; i < nodes.length - 1; i++) {
@@ -216,7 +217,23 @@ const ControlPanel = new Vue({
                 }
                 return [e, ee];
             };
-            const draw = (timestamp) => {
+
+            const supedges = (nodes, gnodes, radius_s, radius_u) => {
+                var e = [], ee = [];
+                for (var snode of nodes) {
+                    const p1 = snode.pos;
+                    for (var gnode of gnodes) {
+                        for (var node of gnode) {
+                            const p2 = node.pos;
+                            if (distance(p1, p2) <= radius_s) e.push([[p1.x, p1.y], [p2.x, p2.y]]);
+                            if (distance(p1, p2) <= radius_u) ee.push([[p1.x, p1.y], [p2.x, p2.y]]);
+                        }
+                    }
+                }
+                return [e, ee];
+            };
+
+            const loop = (timestamp) => {
                 canvas.width = window.innerWidth;
                 canvas.height = window.innerHeight;
                 context.clearRect(0, 0, canvas.width, canvas.height);
@@ -227,11 +244,11 @@ const ControlPanel = new Vue({
                     context.font = fontsize + " monospace";
                     context.fillText(text, Math.round((canvas.width - textwidth) / 2), Math.round((canvas.height - fontsize) / 2));
                 }
-                for (var cid of Object.keys(ClusterInstances)) {
-                    const cdef = this.getCluster(cid);
-                    if (!cdef.visible) continue;
-                    const cluster = ClusterInstances[cid];
-                    const nodes = cluster.step(delta);
+
+                var supclusters = [];
+                var gnodes = [];
+                const draw = (cluster, cdef) => {
+                    const nodes = cluster.nodes;
                     const radius_s = cdef.radiusStable;
                     const radius_u = cdef.radiusUnstable;
                     for (var node of nodes) {
@@ -240,9 +257,12 @@ const ControlPanel = new Vue({
                         context.arc(node.pos.x, node.pos.y, cdef.nodeSize / 2, 0, 2 * Math.PI);
                         context.fill();
                     }
-                    if (!cdef.drawEdges) continue;
+                    if (!cdef.drawEdges) return;
+                    var edges_all = []
+                    if (cdef.superNode) edges_all = supedges(nodes, gnodes, radius_s, radius_u);
+                    else edges_all = edges(nodes, radius_s, radius_u);
                     context.setLineDash([]);
-                    for (var edge of edges(nodes, radius_s, radius_u)) {
+                    for (var edge of edges_all) {
                         for (var e of edge) {
                             const x1 = e[0][0], y1 = e[0][1], x2 = e[1][0], y2 = e[1][1];
                             context.beginPath();
@@ -254,10 +274,23 @@ const ControlPanel = new Vue({
                         }
                         context.setLineDash([1, 4]);
                     }
+                };
+
+                for (var cid of Object.keys(ClusterInstances)) {
+                    const cdef = this.getCluster(cid);
+                    const cluster = ClusterInstances[cid];
+                    const nodes = cluster.step(delta);
+                    if (cdef.visible) gnodes.push(nodes);
+                    if (cdef.superNode) supclusters.push([cluster, cdef]);
+                    if (cdef.visible && !cdef.supclusters) draw(cluster, cdef);
                 }
-                requestAnimationFrame((ts) => draw(ts));
+                for (var supcluster of supclusters) {
+                    const cluster = supcluster[0], cdef = supcluster[1];
+                    draw(cluster, cdef);
+                }
+                requestAnimationFrame((ts) => loop(ts));
             };
-            requestAnimationFrame((ts) => draw(ts));
+            requestAnimationFrame((ts) => loop(ts));
         }
     },
     mounted: function() {
