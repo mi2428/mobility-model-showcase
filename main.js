@@ -123,7 +123,8 @@ const NewClusterDefine = (cid) => {
         speedMin: 1,
         coffeebreakMax: 10,
         coffeebreakMin: 1,
-        radius: 100,
+        radiusStable: 100,
+        radiusUnstable: 130,
         visible: true,
         drawEdges: false,
         superNode: false,
@@ -203,16 +204,17 @@ const ControlPanel = new Vue({
             const delta = 0.1;
             const canvas = document.getElementById('canvas');
             const context = canvas.getContext("2d");
-            const edges = (nodes, radius) => {
-                var e = []
+            const edges = (nodes, radius_s, radius_u) => {
+                var e = [], ee = [];
                 for (var i = 0; i < nodes.length - 1; i++) {
                     const p1 = nodes[i].pos;
                     for (var j = i+1; j < nodes.length; j++) {
                         const p2 = nodes[j].pos;
-                        if (distance(p1, p2) <= radius) e.push([[p1.x, p1.y], [p2.x, p2.y]]);
+                        if (distance(p1, p2) <= radius_s) e.push([[p1.x, p1.y], [p2.x, p2.y]]);
+                        if (distance(p1, p2) <= radius_u) ee.push([[p1.x, p1.y], [p2.x, p2.y]]);
                     }
                 }
-                return e;
+                return [e, ee];
             };
             const draw = (timestamp) => {
                 canvas.width = window.innerWidth;
@@ -230,7 +232,8 @@ const ControlPanel = new Vue({
                     if (!cdef.visible) continue;
                     const cluster = ClusterInstances[cid];
                     const nodes = cluster.step(delta);
-                    const radius = cdef.radius;
+                    const radius_s = cdef.radiusStable;
+                    const radius_u = cdef.radiusUnstable;
                     for (var node of nodes) {
                         context.beginPath();
                         context.fillStyle = cdef.color;
@@ -238,14 +241,19 @@ const ControlPanel = new Vue({
                         context.fill();
                     }
                     if (!cdef.drawEdges) continue;
-                    for (var edge of edges(nodes, radius)) {
-                        const x1 = edge[0][0], y1 = edge[0][1], x2 = edge[1][0], y2 = edge[1][1];
-                        context.beginPath();
-                        context.moveTo(x1, y1);
-                        context.lineTo(x2, y2);
-                        context.strokeStyle = cdef.color;
-                        context.lineWidth = cdef.edgeWidth;
-                        context.stroke();
+                    var setdash = false;
+                    for (var edge of edges(nodes, radius_s, radius_u)) {
+                        for (var e of edge) {
+                            const x1 = e[0][0], y1 = e[0][1], x2 = e[1][0], y2 = e[1][1];
+                            context.beginPath();
+                            context.moveTo(x1, y1);
+                            context.lineTo(x2, y2);
+                            context.strokeStyle = cdef.color;
+                            context.lineWidth = cdef.edgeWidth;
+                            if (setdash) context.setLineDash([1, 4]);
+                            context.stroke();
+                        }
+                        setdash = true;
                     }
                 }
                 requestAnimationFrame((ts) => draw(ts));

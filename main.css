@@ -43,7 +43,7 @@ canvas {
 
 .container .card .card-body .form-inline .form-control-label {
   display: inline;
-  text-align: right;
+  text-align: left;
   padding-right: 5px;
 }
 

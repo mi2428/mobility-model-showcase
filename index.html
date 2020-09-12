@@ -51,9 +51,14 @@
                 <input class="form-control col-md-2 sf" name="number" type="number" min="1" max="999" step="1" v-bind:data-cid="cluster.id" v-model="cluster.coffeebreakMin">
               </form>
               <form class="form-inline">
-                <label class="form-control-label col-md-4 sf">Connection limit</label>
-                <input class="form-control col-md-6 sf" name="range" type="range" min="1" max="200" step="1" v-model="cluster.radius">
-                <input class="form-control col-md-2 sf" name="number" type="number" min="1" max="999" step="1" v-bind:data-cid="cluster.id" v-model="cluster.radius">
+                <label class="form-control-label col-md-4 sf">Link (stable)</label>
+                <input class="form-control col-md-6 sf" name="range" type="range" min="1" max="250" step="1" v-model="cluster.radiusStable">
+                <input class="form-control col-md-2 sf" name="number" type="number" min="1" max="999" step="1" v-bind:data-cid="cluster.id" v-model="cluster.radiusStable">
+              </form>
+              <form class="form-inline">
+                <label class="form-control-label col-md-4 sf">Link (unstable)</label>
+                <input class="form-control col-md-6 sf" name="range" type="range" min="1" max="250" step="1" v-model="cluster.radiusUnstable">
+                <input class="form-control col-md-2 sf" name="number" type="number" min="1" max="999" step="1" v-bind:data-cid="cluster.id" v-model="cluster.radiusUnstable">
               </form>
               <form class="form-inline">
                 <div class="d-inline-block col-md-4 p-0 align-middle">
