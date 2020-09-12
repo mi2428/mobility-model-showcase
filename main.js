@@ -129,7 +129,7 @@ const NewClusterDefine = (cid) => {
         drawEdges: false,
         superNode: false,
         nodeSize: 13,
-        edgeWidth: 1,
+        edgeWidth: 2,
         color: color,
         fieldWidth: window.innerWidth,
         fieldHeight: window.innerHeight,
@@ -241,7 +241,7 @@ const ControlPanel = new Vue({
                         context.fill();
                     }
                     if (!cdef.drawEdges) continue;
-                    var setdash = false;
+                    context.setLineDash([]);
                     for (var edge of edges(nodes, radius_s, radius_u)) {
                         for (var e of edge) {
                             const x1 = e[0][0], y1 = e[0][1], x2 = e[1][0], y2 = e[1][1];
@@ -250,10 +250,9 @@ const ControlPanel = new Vue({
                             context.lineTo(x2, y2);
                             context.strokeStyle = cdef.color;
                             context.lineWidth = cdef.edgeWidth;
-                            if (setdash) context.setLineDash([1, 4]);
                             context.stroke();
                         }
-                        setdash = true;
+                        context.setLineDash([1, 4]);
                     }
                 }
                 requestAnimationFrame((ts) => draw(ts));
