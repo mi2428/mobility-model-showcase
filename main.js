@@ -302,6 +302,46 @@ const ControlPanel = new Vue({
                 })
             };
 
+            const getDatasets = () => {
+                return this.datasets;
+            }
+
+            const drawChart = () => {
+                const datasets = this.datasets;
+                const onRefresh = (chart) => {
+                    chart.data.datasets.forEach(function(dataset) {
+                        dataset.data.push({
+                            x: Date.now(),
+                            y: Math.random()
+                        })
+                    })
+                };
+                const chart = new Chart(chartctx, {
+                    type: 'line',
+                    data: { datasets: [{ data: [] }] },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        animation: {
+                            duration: 0
+                        },
+                        hover: {
+                            animationDuration: 0
+                        },
+                        responsiveAnimationDuration: 0,
+                        legend: { position: 'bottom' },
+                        scales: {
+                            xAxes: [{
+                                type: 'realtime',
+                                realtime: {
+                                    onRefresh: onRefresh
+                                }
+                            }]
+                        }
+                    }
+                });
+            };
+
             const loop = (timestamp) => {
                 var sup_clusters = [];
                 var all_nodes = [];
@@ -341,9 +381,6 @@ const ControlPanel = new Vue({
                     }
                 };
 
-                const draw_chart = () => {
-                };
-
                 const draw = () => {
                     context.clearRect(0, 0, canvas.width, canvas.height);
                     if (draw_buf.length == 0) return ;
@@ -378,6 +415,8 @@ const ControlPanel = new Vue({
                 draw();
                 requestAnimationFrame((ts) => loop(ts));
             };
+
+            drawChart();
             requestAnimationFrame((ts) => loop(ts));
         }
     },
