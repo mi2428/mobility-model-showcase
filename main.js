@@ -171,6 +171,7 @@ const ControlPanel = new Vue({
         models: MODEL,
         fieldWidth: 1000,
         fieldHeight: 1000,
+        currentTime: "0.00",
     },
     watch: {
         clusterDefines: {
@@ -306,9 +307,10 @@ const ControlPanel = new Vue({
                 };
 
                 const draw = () => {
+                    context.clearRect(0, 0, canvas.width, canvas.height);
+                    if (draw_buf.length == 0) return ;
                     canvas.width = window.innerWidth;
                     canvas.height = window.innerHeight;
-                    context.clearRect(0, 0, canvas.width, canvas.height);
                     const drawers = [draw_edges, draw_nodes];
                     for (var drawer of drawers) {
                         for (var req of draw_buf) {
@@ -316,6 +318,7 @@ const ControlPanel = new Vue({
                             drawer(cluster, cdef);
                         }
                     }
+                    this.currentTime = (Number(this.currentTime) + delta).toFixed(2);
                     draw_buf = [];
                 };
 

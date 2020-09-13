@@ -59,6 +59,12 @@ canvas {
   opacity: 0.9;
 }
 
+.clock-panel {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+}
+
 .op-1 {
   opacity: 1 !important;
 }
