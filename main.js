@@ -280,7 +280,9 @@ const ControlPanel = new Vue({
 
                 var sup_clusters = [];
                 var all_nodes = [];
-                const draw = (cluster, cdef) => {
+                var draw_buf = [];
+
+                const draw_nodes = (cluster, cdef) => {
                     const nodes = cluster.nodes;
                     const radius_s = cdef.radiusStable;
                     const radius_u = cdef.radiusUnstable;
@@ -290,6 +292,11 @@ const ControlPanel = new Vue({
                         context.arc(node.pos.x, node.pos.y, cdef.nodeSize / 2, 0, 2 * Math.PI);
                         context.fill();
                     }
+                };
+                const draw_edges = (cluster, cdef) => {
+                    const nodes = cluster.nodes;
+                    const radius_s = cdef.radiusStable;
+                    const radius_u = cdef.radiusUnstable;
                     if (!cdef.drawEdges) return;
                     var edges_all = []
                     if (cdef.superNode) edges_all = sup_edges(nodes, all_nodes, radius_s, radius_u);
@@ -309,6 +316,16 @@ const ControlPanel = new Vue({
                         context.setLineDash([1, 4]);
                     }
                 };
+                const draw = () => {
+                    const drawers = [draw_edges, draw_nodes];
+                    for (var drawer of drawers) {
+                        for (var req of draw_buf) {
+                            const cluster = req[0], cdef = req[1];
+                            drawer(cluster, cdef);
+                        }
+                    }
+                    draw_buf = [];
+                };
 
                 for (var cid of Object.keys(ClusterInstances)) {
                     const cdef = this.getCluster(cid);
@@ -317,12 +334,14 @@ const ControlPanel = new Vue({
                     for (var node of nodes) node.neighbors = [];
                     if (cdef.visible) all_nodes.push(nodes);
                     if (cdef.superNode) sup_clusters.push([cluster, cdef]);
-                    if (cdef.visible && !cdef.sup_clusters) draw(cluster, cdef);
+                    if (cdef.visible && !cdef.sup_clusters) draw_buf.push([cluster, cdef]);
                 }
                 for (var sup_cluster of sup_clusters) {
                     const cluster = sup_cluster[0], cdef = sup_cluster[1];
-                    draw(cluster, cdef);
+                    draw_buf.push([cluster, cdef]);
                 }
+
+                draw();
                 requestAnimationFrame((ts) => loop(ts));
             };
             requestAnimationFrame((ts) => loop(ts));
