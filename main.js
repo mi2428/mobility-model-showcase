@@ -209,7 +209,8 @@ const ControlPanel = new Vue({
         },
         datasets: {
             handler: function() {
-                for (var dset of this.datasets) {
+                for (var didx = 0; didx < this.datasets.length; didx++) {
+                    const dset = this.datasets[didx];
                     if (!(dset.id in ChartInstances)) {
                         const chartid = 'chart-' + dset.id;
                         const parent = document.getElementById('chart-holder');
@@ -217,9 +218,9 @@ const ControlPanel = new Vue({
                         child.setAttribute('id', chartid);
                         parent.appendChild(child);
                         ChartInstances[dset.id] = chartid;
+                        this.chartDrawing(chartid, didx);
                     }
                 }
-                console.log(ChartInstances)
             },
             deep: true
         }
@@ -237,15 +238,18 @@ const ControlPanel = new Vue({
             const targetid = event.target.dataset.cid;
             this.clusterDefines = this.clusterDefines.filter(c => c.id != targetid);
         },
-        chartDrawing: function(eid, did) {
+        chartDrawing: function(eid, didx) {
             const canvas = document.getElementById(eid);
             const context = canvas.getContext("2d")
-            const getDatasets = () => this.datasets[did].data.pop();
+            console.log(this.datasets, eid, didx, this.datasets[didx], this.datasets[didx].data)
             const onRefresh = (chart) => {
-                chart.data.datasets[did].data.push({
+                if (chart.data.datasets[didx] === undefined) {
+                    // Potencially dangerous?
+                    chart.data.datasets.push({ data: [] });
+                }
+                chart.data.datasets[didx].data.push({
                     x: Date.now(),
-                    y: getDatasets()
-
+                    y: ControlPanel.datasets[didx].data.pop()
                 });
             };
             const chart = new Chart(context, {
@@ -337,7 +341,7 @@ const ControlPanel = new Vue({
             const updateDatasets = (cluster, cdef) => {
                 const buffersize = 50;
                 const data = {
-                    x: this.currentTime,
+                    x: Date.now(),
                     y: degrees(cluster.nodes).ave
                 };
                 for (var dataset of this.datasets) {
