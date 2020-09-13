@@ -28,6 +28,14 @@ class Node {
         this.allowable_error = 1;
     }
 
+    addNeighbor(n) {
+        this.neighbors.push(n);
+    }
+
+    clearNeighbors() {
+        this.neighbors = [];
+    }
+
     setVelocity(speed) {
         this.velocity = this.dest.sub(this.pos).scalar(speed / distance(this.pos, this.dest));
     }
@@ -172,6 +180,7 @@ const ControlPanel = new Vue({
         fieldWidth: 1000,
         fieldHeight: 1000,
         currentTime: "0.0",
+        datasets: [],
     },
     watch: {
         clusterDefines: {
@@ -184,7 +193,10 @@ const ControlPanel = new Vue({
                 if (cdefids.length == 0) $(".control-panel").addClass("op-1");
                 if (cdefids.length > 0) $(".control-panel").removeClass("op-1");
                 for (var cid of Object.keys(ClusterInstances)) {
-                    if (!cdefids.includes(Number(cid))) delete ClusterInstances[cid];
+                    if (!cdefids.includes(Number(cid))) {
+                        delete ClusterInstances[cid];
+                        this.datasets = this.datasets.filter(d => d.id != cid);
+                    }
                 }
                 for (var cdef of this.clusterDefines) {
                     const cluster = ClusterInstances[cdef.id];
@@ -209,8 +221,10 @@ const ControlPanel = new Vue({
         },
         canvasDrawing: function() {
             const delta = 0.1;
-            const canvas = document.getElementById('canvas');
+            const canvas = document.getElementById('showcase');
             const context = canvas.getContext("2d");
+            const chartcanvas = document.getElementById('chartjs');
+            const chartctx = chartcanvas.getContext("2d");
 
             const edges = (nodes, radius_s, radius_u) => {
                 var e = [], ee = [];
@@ -222,8 +236,8 @@ const ControlPanel = new Vue({
                         if (d <= radius_u) ee.push([[p1.x, p1.y], [p2.x, p2.y]]);
                         if (d <= radius_s) {
                             e.push([[p1.x, p1.y], [p2.x, p2.y]]);
-                            nodes[i].neighbors.push(j);
-                            nodes[j].neighbors.push(i);
+                            nodes[i].addNeighbor(j);
+                            nodes[j].addNeighbor(i);
                         }
                     }
                 }
@@ -244,8 +258,8 @@ const ControlPanel = new Vue({
                             if (d <= radius_u) ee.push([[p1.x, p1.y], [p2.x, p2.y]]);
                             if (d <= radius_s) {
                                 e.push([[p1.x, p1.y], [p2.x, p2.y]]);
-                                n1.neighbors.push(j);
-                                n2.neighbors.push(i);
+                                n1.addNeighbor(j);
+                                n2.addNeighbor(i);
                             }
                         }
                     }
@@ -266,6 +280,27 @@ const ControlPanel = new Vue({
                 const ave = 2 * sum / nodes.length;
                 return {min: min, max: max, ave: ave};
             }
+
+            const updateDatasets = (cluster, cdef) => {
+                const data = {
+                    x: this.currentTime,
+                    y: degrees(cluster.nodes).ave
+                };
+                for (var dataset of this.datasets) {
+                    if (dataset.id != cdef.id) continue;
+                    if (dataset.data.length >= 500) dataset.data.pop();
+                    dataset.data.push(data);
+                    return;
+                }
+                this.datasets.push({
+                    id: cdef.id,
+                    label: 'Cluster #' + cdef.id,
+                    borderColor: cdef.color,
+                    fill: false,
+                    cubicInterpolationMode: 'monotone',
+                    data: [ data ]
+                })
+            };
 
             const loop = (timestamp) => {
                 var sup_clusters = [];
@@ -290,7 +325,7 @@ const ControlPanel = new Vue({
                     var edges_all = []
                     if (cdef.superNode) edges_all = sup_edges(nodes, all_nodes, radius_s, radius_u);
                     else edges_all = edges(nodes, radius_s, radius_u);
-                    const degree = degrees(nodes);
+                    updateDatasets(cluster, cdef);
                     context.setLineDash([]);
                     for (var edge of edges_all) {
                         for (var e of edge) {
@@ -304,6 +339,9 @@ const ControlPanel = new Vue({
                         }
                         context.setLineDash([1, 4]);
                     }
+                };
+
+                const draw_chart = () => {
                 };
 
                 const draw = () => {
@@ -326,7 +364,7 @@ const ControlPanel = new Vue({
                     const cdef = this.getCluster(cid);
                     const cluster = ClusterInstances[cid];
                     const nodes = cluster.step(delta);
-                    for (var node of nodes) node.neighbors = [];
+                    for (var node of nodes) node.clearNeighbors();
                     if (cdef.visible) all_nodes.push(nodes);
                     if (cdef.visible && cdef.superNode) sup_clusters.push([cluster, cdef]);
                     if (cdef.visible && !cdef.sup_clusters) draw_buf.push([cluster, cdef]);
