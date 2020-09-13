@@ -142,6 +142,7 @@ const NewClusterDefine = (cid) => {
         color: color,
         fieldWidth: window.innerWidth,
         fieldHeight: window.innerHeight,
+        chartCanvasId: "", 
     };
     return cdef;
 };
@@ -203,6 +204,22 @@ const ControlPanel = new Vue({
                     const cluster = ClusterInstances[cdef.id];
                     cluster.reset(GetModelParams(cdef));
                 }
+            },
+            deep: true
+        },
+        datasets: {
+            handler: function() {
+                for (var dset of this.datasets) {
+                    if (!(dset.id in ChartInstances)) {
+                        const chartid = 'chart-' + dset.id;
+                        const parent = document.getElementById('chart-holder');
+                        const child = document.createElement('canvas');
+                        child.setAttribute('id', chartid);
+                        parent.appendChild(child);
+                        ChartInstances[dset.id] = chartid;
+                    }
+                }
+                console.log(ChartInstances)
             },
             deep: true
         }
@@ -318,13 +335,14 @@ const ControlPanel = new Vue({
             }
 
             const updateDatasets = (cluster, cdef) => {
+                const buffersize = 50;
                 const data = {
                     x: this.currentTime,
                     y: degrees(cluster.nodes).ave
                 };
                 for (var dataset of this.datasets) {
                     if (dataset.id != cdef.id) continue;
-                    if (dataset.data.length >= 500) dataset.data.pop();
+                    if (dataset.data.length >= buffersize) dataset.data.pop();
                     dataset.data.push(data);
                     return;
                 }
@@ -337,8 +355,6 @@ const ControlPanel = new Vue({
                     data: [ data ]
                 })
             };
-
-
 
             const loop = (timestamp) => {
                 var sup_clusters = [];
@@ -415,7 +431,7 @@ const ControlPanel = new Vue({
             };
 
             // drawChart(1);
-            this.chartDrawing('chartjs', 0);
+            // this.chartDrawing('c1', 0);
             requestAnimationFrame((ts) => loop(ts));
         }
     },
