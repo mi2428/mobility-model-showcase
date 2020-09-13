@@ -302,17 +302,22 @@ const ControlPanel = new Vue({
                 })
             };
 
-            const getDatasets = () => {
-                return this.datasets;
-            }
 
-            const drawChart = () => {
-                const datasets = this.datasets;
+            const drawChart = (cid) => {
+                var datasetid = 1;
+                // var hit = false;
+                // for (; datasetid < this.datasets.length; datasetid++) {
+                //     if (this.datasets[dataset].id != cid) continue;
+                //     hit = true;
+                // }
+                // console.log(this.datasets, datasetid)
+                // if (!hit) return ;
+                const getDatasets = () => this.datasets[datasetid].data.pop();
                 const onRefresh = (chart) => {
                     chart.data.datasets.forEach(function(dataset) {
                         dataset.data.push({
                             x: Date.now(),
-                            y: Math.random()
+                            y: getDatasets()
                         })
                     })
                 };
@@ -332,6 +337,7 @@ const ControlPanel = new Vue({
                         legend: { position: 'bottom' },
                         scales: {
                             xAxes: [{
+                                display: false,
                                 type: 'realtime',
                                 realtime: {
                                     onRefresh: onRefresh
@@ -416,7 +422,7 @@ const ControlPanel = new Vue({
                 requestAnimationFrame((ts) => loop(ts));
             };
 
-            drawChart();
+            // drawChart(1);
             requestAnimationFrame((ts) => loop(ts));
         }
     },
