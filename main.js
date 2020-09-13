@@ -284,8 +284,6 @@ const ControlPanel = new Vue({
 
                 const draw_nodes = (cluster, cdef) => {
                     const nodes = cluster.nodes;
-                    const radius_s = cdef.radiusStable;
-                    const radius_u = cdef.radiusUnstable;
                     for (var node of nodes) {
                         context.beginPath();
                         context.fillStyle = cdef.color;
@@ -333,7 +331,7 @@ const ControlPanel = new Vue({
                     const nodes = cluster.step(delta);
                     for (var node of nodes) node.neighbors = [];
                     if (cdef.visible) all_nodes.push(nodes);
-                    if (cdef.superNode) sup_clusters.push([cluster, cdef]);
+                    if (cdef.visible && cdef.superNode) sup_clusters.push([cluster, cdef]);
                     if (cdef.visible && !cdef.sup_clusters) draw_buf.push([cluster, cdef]);
                 }
                 for (var sup_cluster of sup_clusters) {
