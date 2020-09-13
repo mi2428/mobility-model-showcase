@@ -277,7 +277,7 @@ const ControlPanel = new Vue({
                         sum += d;
                     }
                 }
-                const ave = 2 * sum / nodes.length;
+                const ave = 2 * sum / ( nodes.length * (nodes.length));
                 return {min: min, max: max, ave: ave};
             }
 
