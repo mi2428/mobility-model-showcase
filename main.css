@@ -51,6 +51,18 @@ canvas {
   width: 380px;
 }
 
+.control-panel {
+  opacity: 0.1;
+}
+
+.control-panel:hover {
+  opacity: 0.9;
+}
+
+.op-1 {
+  opacity: 1 !important;
+}
+
 #add-cluster-btn {
   width: 370px;
   margin: 5px;
