@@ -215,14 +215,14 @@ const ControlPanel = new Vue({
                 var e = [], ee = [];
                 for (var i = 0; i < nodes.length - 1; i++) {
                     const p1 = nodes[i].pos;
-                    for (var j = i+1; j < nodes.length; j++) {
+                    for (var j = i + 1; j < nodes.length; j++) {
                         const p2 = nodes[j].pos;
                         const d = distance(p1, p2);
-                        if (d == 0) continue;
                         if (d <= radius_u) ee.push([[p1.x, p1.y], [p2.x, p2.y]]);
                         if (d <= radius_s) {
                             e.push([[p1.x, p1.y], [p2.x, p2.y]]);
                             nodes[i].neighbors.push(j);
+                            nodes[j].neighbors.push(i);
                         }
                     }
                 }
@@ -252,6 +252,20 @@ const ControlPanel = new Vue({
                 return [e, ee];
             };
 
+            const degrees = (nodes) => {
+                var sum = 0, min = 0, max = 0;
+                for (var i = 0; i < nodes.length - 1; i++) {
+                    for (var j = i; j < nodes.length; j++) {
+                        const d = nodes[i].neighbors.length;
+                        if (d < min) min = d;
+                        if (d > max) max = d;
+                        sum += d;
+                    }
+                }
+                const ave = 2 * sum / nodes.length;
+                return {min: min, max: max, ave: ave};
+            }
+
             const loop = (timestamp) => {
                 canvas.width = window.innerWidth;
                 canvas.height = window.innerHeight;
@@ -280,6 +294,7 @@ const ControlPanel = new Vue({
                     var edges_all = []
                     if (cdef.superNode) edges_all = sup_edges(nodes, all_nodes, radius_s, radius_u);
                     else edges_all = edges(nodes, radius_s, radius_u);
+                    const degree = degrees(nodes);
                     context.setLineDash([]);
                     for (var edge of edges_all) {
                         for (var e of edge) {
