@@ -170,6 +170,7 @@ const NewClusterInstance = (cdef) => {
 };
 
 var ClusterInstances = {};
+var ChartInstances = {};
 
 const ControlPanel = new Vue({
     el: '#control-panel',
@@ -219,12 +220,47 @@ const ControlPanel = new Vue({
             const targetid = event.target.dataset.cid;
             this.clusterDefines = this.clusterDefines.filter(c => c.id != targetid);
         },
-        canvasDrawing: function() {
+        chartDrawing: function(eid, did) {
+            const canvas = document.getElementById(eid);
+            const context = canvas.getContext("2d")
+            const getDatasets = () => this.datasets[did].data.pop();
+            const onRefresh = (chart) => {
+                chart.data.datasets[did].data.push({
+                    x: Date.now(),
+                    y: getDatasets()
+
+                });
+            };
+            const chart = new Chart(context, {
+                type: 'line',
+                data: { datasets: [{ data: [] }] },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: {
+                        duration: 0
+                    },
+                    hover: {
+                        animationDuration: 0
+                    },
+                    responsiveAnimationDuration: 0,
+                    legend: { position: 'bottom' },
+                    scales: {
+                        xAxes: [{
+                            display: false,
+                            type: 'realtime',
+                            realtime: {
+                                onRefresh: onRefresh
+                            }
+                        }]
+                    }
+                }
+            });
+        },
+        showcaseDrawing: function() {
             const delta = 0.1;
             const canvas = document.getElementById('showcase');
             const context = canvas.getContext("2d");
-            const chartcanvas = document.getElementById('chartjs');
-            const chartctx = chartcanvas.getContext("2d");
 
             const edges = (nodes, radius_s, radius_u) => {
                 var e = [], ee = [];
@@ -303,50 +339,6 @@ const ControlPanel = new Vue({
             };
 
 
-            const drawChart = (cid) => {
-                var datasetid = 1;
-                // var hit = false;
-                // for (; datasetid < this.datasets.length; datasetid++) {
-                //     if (this.datasets[dataset].id != cid) continue;
-                //     hit = true;
-                // }
-                // console.log(this.datasets, datasetid)
-                // if (!hit) return ;
-                const getDatasets = () => this.datasets[datasetid].data.pop();
-                const onRefresh = (chart) => {
-                    chart.data.datasets.forEach(function(dataset) {
-                        dataset.data.push({
-                            x: Date.now(),
-                            y: getDatasets()
-                        })
-                    })
-                };
-                const chart = new Chart(chartctx, {
-                    type: 'line',
-                    data: { datasets: [{ data: [] }] },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        animation: {
-                            duration: 0
-                        },
-                        hover: {
-                            animationDuration: 0
-                        },
-                        responsiveAnimationDuration: 0,
-                        legend: { position: 'bottom' },
-                        scales: {
-                            xAxes: [{
-                                display: false,
-                                type: 'realtime',
-                                realtime: {
-                                    onRefresh: onRefresh
-                                }
-                            }]
-                        }
-                    }
-                });
-            };
 
             const loop = (timestamp) => {
                 var sup_clusters = [];
@@ -423,10 +415,11 @@ const ControlPanel = new Vue({
             };
 
             // drawChart(1);
+            this.chartDrawing('chartjs', 0);
             requestAnimationFrame((ts) => loop(ts));
         }
     },
     mounted: function() {
-        this.canvasDrawing();
+        this.showcaseDrawing();
     }
 });
