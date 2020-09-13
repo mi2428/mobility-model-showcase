@@ -65,6 +65,18 @@ canvas {
   right: 15px;
 }
 
+.status-panel {
+  position: absolute;
+  bottom: 15px;
+  left: 15px;
+}
+
+.control-panel-bottom {
+  position: absolute;
+  bottom: 15px;
+  right: 15px;
+}
+
 .op-1 {
   opacity: 1 !important;
 }
