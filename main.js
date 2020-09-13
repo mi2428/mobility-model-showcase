@@ -171,7 +171,7 @@ const ControlPanel = new Vue({
         models: MODEL,
         fieldWidth: 1000,
         fieldHeight: 1000,
-        currentTime: "0.00",
+        currentTime: "0.0",
     },
     watch: {
         clusterDefines: {
@@ -318,7 +318,7 @@ const ControlPanel = new Vue({
                             drawer(cluster, cdef);
                         }
                     }
-                    this.currentTime = (Number(this.currentTime) + delta).toFixed(2);
+                    this.currentTime = (Number(this.currentTime) + delta).toFixed(1);
                     draw_buf = [];
                 };
 
