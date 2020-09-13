@@ -101,10 +101,21 @@
           <button id="add-cluster-btn" type="button" class="btn btn-dark sf" v-on:click="addCluster()"><i class="fas fa-plus-square mr-2"></i>Add cluster</button>
         </div>
 
-        <div id="control-panel-bottom" class="control-panel control-panel-bottom fixed-bottom op-1">
+        <div class="status-panel fixed-bottom op-1">
           <!-- template begin -->
           <template>
-            <div class="card float-right">
+            <div class="card float-left">
+              <div class="card-body py-0">
+              </div>
+            </div>
+          </template>
+          <!-- template end -->
+        </div>
+
+        <div class="control-panel-bottom fixed-bottom">
+          <!-- template begin -->
+          <template>
+            <div class="card float-right control-panel op-1">
               <div class="card-body py-0">
                 <form class="form-inline">
                   <div class="d-inline-block col-md-6 p-0 align-middle">

@@ -23,6 +23,7 @@ const RT = {
 class Node {
     constructor(pos, speed, dest) {
         this.pos = pos;
+        this.neighbors = [];
         this.setJourney(speed, dest);
         this.allowable_error = 1;
     }
@@ -216,22 +217,35 @@ const ControlPanel = new Vue({
                     const p1 = nodes[i].pos;
                     for (var j = i+1; j < nodes.length; j++) {
                         const p2 = nodes[j].pos;
-                        if (distance(p1, p2) <= radius_s) e.push([[p1.x, p1.y], [p2.x, p2.y]]);
-                        if (distance(p1, p2) <= radius_u) ee.push([[p1.x, p1.y], [p2.x, p2.y]]);
+                        const d = distance(p1, p2);
+                        if (d == 0) continue;
+                        if (d <= radius_u) ee.push([[p1.x, p1.y], [p2.x, p2.y]]);
+                        if (d <= radius_s) {
+                            e.push([[p1.x, p1.y], [p2.x, p2.y]]);
+                            nodes[i].neighbors.push(j);
+                        }
                     }
                 }
                 return [e, ee];
             };
 
-            const supedges = (nodes, gnodes, radius_s, radius_u) => {
+            const sup_edges = (sup_nodes, all_nodes, radius_s, radius_u) => {
                 var e = [], ee = [];
-                for (var snode of nodes) {
-                    const p1 = snode.pos;
-                    for (var gnode of gnodes) {
-                        for (var node of gnode) {
-                            const p2 = node.pos;
-                            if (distance(p1, p2) <= radius_s) e.push([[p1.x, p1.y], [p2.x, p2.y]]);
-                            if (distance(p1, p2) <= radius_u) ee.push([[p1.x, p1.y], [p2.x, p2.y]]);
+                for (var i = 0; i < sup_nodes.length; i++) {
+                    const n1 = sup_nodes[i];
+                    const p1 = n1.pos;
+                    for (var cluster_nodes of all_nodes) {
+                        for (var j = 0; j < cluster_nodes.length; j++) {
+                            const n2 = cluster_nodes[j];
+                            const p2 = n2.pos;
+                            const d = distance(p1, p2);
+                            if (d == 0) continue;
+                            if (d <= radius_u) ee.push([[p1.x, p1.y], [p2.x, p2.y]]);
+                            if (d <= radius_s) {
+                                e.push([[p1.x, p1.y], [p2.x, p2.y]]);
+                                n1.neighbors.push(j);
+                                n2.neighbors.push(i);
+                            }
                         }
                     }
                 }
@@ -250,8 +264,8 @@ const ControlPanel = new Vue({
                     context.fillText(text, Math.round((canvas.width - textwidth) / 2), Math.round((canvas.height - fontsize) / 2));
                 }
 
-                var supclusters = [];
-                var gnodes = [];
+                var sup_clusters = [];
+                var all_nodes = [];
                 const draw = (cluster, cdef) => {
                     const nodes = cluster.nodes;
                     const radius_s = cdef.radiusStable;
@@ -264,7 +278,7 @@ const ControlPanel = new Vue({
                     }
                     if (!cdef.drawEdges) return;
                     var edges_all = []
-                    if (cdef.superNode) edges_all = supedges(nodes, gnodes, radius_s, radius_u);
+                    if (cdef.superNode) edges_all = sup_edges(nodes, all_nodes, radius_s, radius_u);
                     else edges_all = edges(nodes, radius_s, radius_u);
                     context.setLineDash([]);
                     for (var edge of edges_all) {
@@ -285,12 +299,13 @@ const ControlPanel = new Vue({
                     const cdef = this.getCluster(cid);
                     const cluster = ClusterInstances[cid];
                     const nodes = cluster.step(delta);
-                    if (cdef.visible) gnodes.push(nodes);
-                    if (cdef.superNode) supclusters.push([cluster, cdef]);
-                    if (cdef.visible && !cdef.supclusters) draw(cluster, cdef);
+                    for (var node of nodes) node.neighbors = [];
+                    if (cdef.visible) all_nodes.push(nodes);
+                    if (cdef.superNode) sup_clusters.push([cluster, cdef]);
+                    if (cdef.visible && !cdef.sup_clusters) draw(cluster, cdef);
                 }
-                for (var supcluster of supclusters) {
-                    const cluster = supcluster[0], cdef = supcluster[1];
+                for (var sup_cluster of sup_clusters) {
+                    const cluster = sup_cluster[0], cdef = sup_cluster[1];
                     draw(cluster, cdef);
                 }
                 requestAnimationFrame((ts) => loop(ts));
