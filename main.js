@@ -267,17 +267,6 @@ const ControlPanel = new Vue({
             }
 
             const loop = (timestamp) => {
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
-                context.clearRect(0, 0, canvas.width, canvas.height);
-                if (Object.keys(ClusterInstances).length == 0) {
-                    const text = "Mobility Model Showcase";
-                    const fontsize = "32px"
-                    const textwidth = context.measureText(text).width;
-                    context.font = fontsize + " monospace";
-                    context.fillText(text, Math.round((canvas.width - textwidth) / 2), Math.round((canvas.height - fontsize) / 2));
-                }
-
                 var sup_clusters = [];
                 var all_nodes = [];
                 var draw_buf = [];
@@ -291,6 +280,7 @@ const ControlPanel = new Vue({
                         context.fill();
                     }
                 };
+
                 const draw_edges = (cluster, cdef) => {
                     const nodes = cluster.nodes;
                     const radius_s = cdef.radiusStable;
@@ -314,7 +304,11 @@ const ControlPanel = new Vue({
                         context.setLineDash([1, 4]);
                     }
                 };
+
                 const draw = () => {
+                    canvas.width = window.innerWidth;
+                    canvas.height = window.innerHeight;
+                    context.clearRect(0, 0, canvas.width, canvas.height);
                     const drawers = [draw_edges, draw_nodes];
                     for (var drawer of drawers) {
                         for (var req of draw_buf) {
@@ -334,6 +328,7 @@ const ControlPanel = new Vue({
                     if (cdef.visible && cdef.superNode) sup_clusters.push([cluster, cdef]);
                     if (cdef.visible && !cdef.sup_clusters) draw_buf.push([cluster, cdef]);
                 }
+
                 for (var sup_cluster of sup_clusters) {
                     const cluster = sup_cluster[0], cdef = sup_cluster[1];
                     draw_buf.push([cluster, cdef]);
