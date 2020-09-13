@@ -10,109 +10,116 @@
   </head>
   <body>
     <div class="container">
-      <div id="control-panel" class="control-panel position-fixed float-left op-1">
+      <div id="control-panel">
         <!-- template begin -->
-        <template v-for="cluster in clusterDefines" :keys="cluster.id">
-          <div class="card">
-            <div class="card-header bg-transparent">
-              <h1 class="sf">Cluster #{{ cluster.id }}<button :data-cid="cluster.id" class="btn btn-link float-right sf" v-on:click="deleteCluster($event)">Delete</button></h1>
+        <div class="control-panel control-panel-top position-fixed float-left op-1">
+          <template v-for="cluster in clusterDefines" :keys="cluster.id">
+            <div class="card">
+              <div class="card-header bg-transparent">
+                <h1 class="sf">Cluster #{{ cluster.id }}<button :data-cid="cluster.id" class="btn btn-link float-right sf" v-on:click="deleteCluster($event)">Delete</button></h1>
+              </div>
+              <div class="card-body">
+                <form class="form-inline">
+                  <label class="form-control-label col-md-4 sf">Model</label>
+                  <select name="model" class="custom-select col-md-8 sf" :data-cid="cluster.id" v-model="cluster.model">
+                    <template v-for="model in models" :keys="model.id">
+                      <option :value="model.id">{{ model.name }}</option>
+                    </template>
+                  </select>
+                </form>
+                <form class="form-inline">
+                  <label class="form-control-label col-md-4 sf">Number of nodes</label>
+                  <input class="form-control col-md-6 sf" name="range" type="range" min="1" max="100" step="1" v-model.number="cluster.numOfNodes">
+                  <input class="form-control col-md-2 sf" name="number" type="number" min="1" max="999" step="1" :data-cid="cluster.id" v-model.number="cluster.numOfNodes">
+                </form>
+                <form class="form-inline">
+                  <label class="form-control-label col-md-4 sf">Speed limit (upper)</label>
+                  <input class="form-control col-md-6 sf" name="range" type="range" min="1" max="20" step="0.1" v-model.number="cluster.speedMax">
+                  <input class="form-control col-md-2 sf" name="number" type="number" min="1" max="999" step="0.1" :data-cid="cluster.id" v-model.number="cluster.speedMax">
+                </form>
+                <form class="form-inline">
+                  <label class="form-control-label col-md-4 sf">Speed limit (lower)</label>
+                  <input class="form-control col-md-6 sf" name="range" type="range" min="1" max="20" step="0.1" v-model.number="cluster.speedMin">
+                  <input class="form-control col-md-2 sf" name="number" type="number" min="1" max="999" step="0.1" :data-cid="cluster.id" v-model.number="cluster.speedMin">
+                </form>
+                <form class="form-inline">
+                  <label class="form-control-label col-md-4 sf">Break limit (upper)</label>
+                  <input class="form-control col-md-6 sf" name="range" type="range" min="1" max="30" step="1" v-model.number="cluster.coffeebreakMax">
+                  <input class="form-control col-md-2 sf" name="number" type="number" min="1" max="999" step="1" :data-cid="cluster.id" v-model.number="cluster.coffeebreakMax">
+                </form>
+                <form class="form-inline">
+                  <label class="form-control-label col-md-4 sf">Break limit (lower)</label>
+                  <input class="form-control col-md-6 sf" name="range" type="range" min="1" max="30" step="1" v-model.number="cluster.coffeebreakMin">
+                  <input class="form-control col-md-2 sf" name="number" type="number" min="1" max="999" step="1" :data-cid="cluster.id" v-model.number="cluster.coffeebreakMin">
+                </form>
+                <form class="form-inline">
+                  <label class="form-control-label col-md-4 sf">Link (stable)</label>
+                  <input class="form-control col-md-6 sf" name="range" type="range" min="0" max="250" step="1" v-model.number="cluster.radiusStable">
+                  <input class="form-control col-md-2 sf" name="number" type="number" min="0" max="999" step="1" :data-cid="cluster.id" v-model.number="cluster.radiusStable">
+                </form>
+                <form class="form-inline">
+                  <label class="form-control-label col-md-4 sf">Link (unstable)</label>
+                  <input class="form-control col-md-6 sf" name="range" type="range" min="0" max="250" step="1" v-model.number="cluster.radiusUnstable">
+                  <input class="form-control col-md-2 sf" name="number" type="number" min="0" max="999" step="1" :data-cid="cluster.id" v-model.number="cluster.radiusUnstable">
+                </form>
+                <form class="form-inline">
+                  <div class="d-inline-block col-md-4 p-0 align-middle">
+                    <label class="form-control-label sf">Visible</label>
+                    <input class="form-control" type="checkbox" v-bind:data-cid="cluster.id" v-model="cluster.visible">
+                  </div>
+                  <div class="d-inline-block col-md-4 p-0 align-middle">
+                    <label class="form-control-label sf">Draw edges</label>
+                    <input class="form-control" type="checkbox" v-bind:data-cid="cluster.id" v-model="cluster.drawEdges">
+                  </div>
+                  <div class="d-inline-block col-md-4 p-0 align-middle">
+                    <label class="form-control-label sf">Super node</label>
+                    <input class="form-control" type="checkbox" v-bind:data-cid="cluster.id" v-model="cluster.superNode">
+                  </div>
+                </form>
+                <form class="form-inline">
+                  <div class="d-inline-block col-md-4 p-0 align-middle">
+                    <label class="form-control-label sf">Node size</label>
+                    <input class="form-control sf w-30" name="number" type="number" min="1" max="100" step="1" value="13" :data-cid="cluster.id" v-model.number="cluster.nodeSize">
+                  </div>
+                  <div class="d-inline-block col-md-4 p-0 align-middle">
+                    <label class="form-control-label sf">Edge width</label>
+                    <input class="form-control sf w-30" name="number" type="number" min="1" max="100" step="1" value="9" :data-cid="cluster.id" v-model.number="cluster.edgeWidth">
+                  </div>
+                  <div class="d-inline-block col-md-4 p-0 align-middle">
+                    <label class="form-control-label sf">Color</label>
+                    <input class="form-control w-40 mr-1 sf" name="color" type="color" value="#000000" :data-cid="cluster.id" v-model="cluster.color">
+                  </div>
+                </form>
+                <form class="form-inline d-none">
+                  <input class="form-control col-md-2 sf" name="number" type="number" :data-cid="cluster.id" v-model.number="cluster.fieldWidth">
+                  <input class="form-control col-md-2 sf" name="number" type="number" :data-cid="cluster.id" v-model.number="cluster.fieldHeight">
+                </form>
+              </div>
             </div>
-            <div class="card-body">
-              <form class="form-inline">
-                <label class="form-control-label col-md-4 sf">Model</label>
-                <select name="model" class="custom-select col-md-8 sf" :data-cid="cluster.id" v-model="cluster.model">
-                  <option value="1">Random Waypoint</option>
-                  <option value="2">Reference Point Group Mobility</option>
-                </select>
-              </form>
-              <form class="form-inline">
-                <label class="form-control-label col-md-4 sf">Number of nodes</label>
-                <input class="form-control col-md-6 sf" name="range" type="range" min="1" max="100" step="1" v-model="cluster.numOfNodes">
-                <input class="form-control col-md-2 sf" name="number" type="number" min="1" max="999" step="1" :data-cid="cluster.id" v-model="cluster.numOfNodes">
-              </form>
-              <form class="form-inline">
-                <label class="form-control-label col-md-4 sf">Speed limit (upper)</label>
-                <input class="form-control col-md-6 sf" name="range" type="range" min="1" max="20" step="0.1" v-model="cluster.speedMax">
-                <input class="form-control col-md-2 sf" name="number" type="number" min="1" max="999" step="0.1" :data-cid="cluster.id" v-model="cluster.speedMax">
-              </form>
-              <form class="form-inline">
-                <label class="form-control-label col-md-4 sf">Speed limit (lower)</label>
-                <input class="form-control col-md-6 sf" name="range" type="range" min="1" max="20" step="0.1" v-model="cluster.speedMin">
-                <input class="form-control col-md-2 sf" name="number" type="number" min="1" max="999" step="0.1" :data-cid="cluster.id" v-model="cluster.speedMin">
-              </form>
-              <form class="form-inline">
-                <label class="form-control-label col-md-4 sf">Break limit (upper)</label>
-                <input class="form-control col-md-6 sf" name="range" type="range" min="1" max="30" step="1" v-model="cluster.coffeebreakMax">
-                <input class="form-control col-md-2 sf" name="number" type="number" min="1" max="999" step="1" :data-cid="cluster.id" v-model="cluster.coffeebreakMax">
-              </form>
-              <form class="form-inline">
-                <label class="form-control-label col-md-4 sf">Break limit (lower)</label>
-                <input class="form-control col-md-6 sf" name="range" type="range" min="1" max="30" step="1" v-model="cluster.coffeebreakMin">
-                <input class="form-control col-md-2 sf" name="number" type="number" min="1" max="999" step="1" :data-cid="cluster.id" v-model="cluster.coffeebreakMin">
-              </form>
-              <form class="form-inline">
-                <label class="form-control-label col-md-4 sf">Link (stable)</label>
-                <input class="form-control col-md-6 sf" name="range" type="range" min="1" max="250" step="1" v-model="cluster.radiusStable">
-                <input class="form-control col-md-2 sf" name="number" type="number" min="1" max="999" step="1" :data-cid="cluster.id" v-model="cluster.radiusStable">
-              </form>
-              <form class="form-inline">
-                <label class="form-control-label col-md-4 sf">Link (unstable)</label>
-                <input class="form-control col-md-6 sf" name="range" type="range" min="1" max="250" step="1" v-model="cluster.radiusUnstable">
-                <input class="form-control col-md-2 sf" name="number" type="number" min="1" max="999" step="1" :data-cid="cluster.id" v-model="cluster.radiusUnstable">
-              </form>
-              <form class="form-inline">
-                <div class="d-inline-block col-md-4 p-0 align-middle">
-                  <label class="form-control-label sf">Visible</label>
-                  <input class="form-control" type="checkbox" v-bind:data-cid="cluster.id" v-model="cluster.visible">
-                </div>
-                <div class="d-inline-block col-md-4 p-0 align-middle">
-                  <label class="form-control-label sf">Draw edges</label>
-                  <input class="form-control" type="checkbox" v-bind:data-cid="cluster.id" v-model="cluster.drawEdges">
-                </div>
-                <div class="d-inline-block col-md-4 p-0 align-middle">
-                  <label class="form-control-label sf">Super node</label>
-                  <input class="form-control" type="checkbox" v-bind:data-cid="cluster.id" v-model="cluster.superNode">
-                </div>
-              </form>
-              <form class="form-inline">
-                <div class="d-inline-block col-md-4 p-0 align-middle">
-                  <label class="form-control-label sf">Node size</label>
-                  <input class="form-control sf w-30" name="number" type="number" min="1" max="100" step="1" value="13" :data-cid="cluster.id" v-model="cluster.nodeSize">
-                </div>
-                <div class="d-inline-block col-md-4 p-0 align-middle">
-                  <label class="form-control-label sf">Edge width</label>
-                  <input class="form-control sf w-30" name="number" type="number" min="1" max="100" step="1" value="9" :data-cid="cluster.id" v-model="cluster.edgeWidth">
-                </div>
-                <div class="d-inline-block col-md-4 p-0 align-middle">
-                  <label class="form-control-label sf">Color</label>
-                  <input class="form-control w-40 mr-1 sf" name="color" type="color" value="#000000" :data-cid="cluster.id" v-model="cluster.color">
-                </div>
-              </form>
-              <form class="form-inline d-none">
-                <input class="form-control col-md-2 sf" name="number" type="number" :data-cid="cluster.id" v-model="cluster.fieldWidth">
-                <input class="form-control col-md-2 sf" name="number" type="number" v-bind:data-cid="cluster.id" v-model="cluster.fieldHeight">
-              </form>
-            </div>
-          </div>
-        </template>
-        <!-- template end -->
-        <button id="add-cluster-btn" type="button" class="btn btn-dark sf" v-on:click="addCluster()"><i class="fas fa-plus-square mr-2"></i>Add cluster</button>
-      </div>
+          </template>
+          <!-- template end -->
+          <button id="add-cluster-btn" type="button" class="btn btn-dark sf" v-on:click="addCluster()"><i class="fas fa-plus-square mr-2"></i>Add cluster</button>
+        </div>
 
-      <div id="control-panel-bottom" class="control-panel fixed-bottom op-1">
-        <div class="card float-right">
-          <div class="card-body py-0">
-            <form class="form-inline">
-              <div class="d-inline-block col-md-6 p-0 align-middle">
-                <label class="form-control-label sf">Field width</label>
-                <input id="field-width" class="form-control sf w-40" name="number" type="number" min="1" max="9999" step="1" v-model="fieldWidth">
+        <div id="control-panel-bottom" class="control-panel control-panel-bottom fixed-bottom op-1">
+          <!-- template begin -->
+          <template>
+            <div class="card float-right">
+              <div class="card-body py-0">
+                <form class="form-inline">
+                  <div class="d-inline-block col-md-6 p-0 align-middle">
+                    <label class="form-control-label sf">Field width</label>
+                    <input class="form-control sf w-40" name="number" type="number" min="1" max="9999" step="1" v-model.number="fieldWidth">
+                  </div>
+                  <div class="d-inline-block col-md-6 p-0 align-middle">
+                    <label class="form-control-label sf">Field height</label>
+                    <input class="form-control sf w-40" name="number" type="number" min="1" max="9999" step="1" v-model.number="fieldHeight">
+                  </div>
+                </form>
               </div>
-              <div class="d-inline-block col-md-6 p-0 align-middle">
-                <label class="form-control-label sf">Field height</label>
-                <input id="field-height" class="form-control sf w-40" name="number" type="number" min="1" max="9999" step="1" v-model="fieldHeight">
-              </div>
-            </form>
-          </div>
+            </div>
+          </template>
+          <!-- template end -->
         </div>
       </div>
 

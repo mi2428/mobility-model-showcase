@@ -109,15 +109,15 @@ class RandomWaypointModel {
 }
 
 const MODEL = {
-    RandomWaypointModel: 1,
-    RPGMModel: 2
+    RandomWaypointModel: { id: 1, name: "Random Waypoint" },
+    RPGMModel: { id: 2, name: "Reference Point Group Mobility" },
 }
 
 const NewClusterDefine = (cid) => {
     const color = '#' + ( 0x1000000 + Math.random() * 0xffffff ).toString(16).substr(1,6);
     const cdef = {
         id: cid,
-        model: MODEL.RandomWaypointModel,
+        model: MODEL.RandomWaypointModel.id,
         numOfNodes: 30,
         speedMax: 10,
         speedMin: 1,
@@ -139,23 +139,23 @@ const NewClusterDefine = (cid) => {
 
 const GetModelParams = (cdef) => {
     switch (cdef.model) {
-        case MODEL.RandomWaypointModel:
+        case MODEL.RandomWaypointModel.id:
             return {
                 n_nodes: cdef.numOfNodes,
                 field_size: { x: cdef.fieldWidth, y: cdef.fieldHeight },
                 speed_limit: { min: cdef.speedMin, max: cdef.speedMax },
                 coffeebreak_limit: { min: cdef.coffeebreakMin, max: cdef.coffeebreakMax }
             };
-        case MODEL.RPGMModel:
+        case MODEL.RPGMModel.id:
             return ;
     }
 };
 
 const NewClusterInstance = (cdef) => {
     switch (cdef.model) {
-        case MODEL.RandomWaypointModel:
+        case MODEL.RandomWaypointModel.id:
             return new RandomWaypointModel(GetModelParams(cdef));
-        case MODEL.RPGMModel:
+        case MODEL.RPGMModel.id:
             return ;
     }
 };
@@ -167,6 +167,7 @@ const ControlPanel = new Vue({
     data: {
         clusterDefines: [],
         nextId: 1,
+        models: MODEL,
         fieldWidth: 1000,
         fieldHeight: 1000,
     },
