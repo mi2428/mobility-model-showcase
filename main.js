@@ -256,7 +256,7 @@ const ControlPanel = new Vue({
                 type: 'line',
                 data: { datasets: [{ data: [] }] },
                 options: {
-                    responsive: true,
+                    responsive: false,
                     maintainAspectRatio: false,
                     animation: {
                         duration: 0
