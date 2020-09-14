@@ -207,23 +207,23 @@ const ControlPanel = new Vue({
             },
             deep: true
         },
-        datasets: {
-            handler: function() {
-                for (var didx = 0; didx < this.datasets.length; didx++) {
-                    const dset = this.datasets[didx];
-                    if (!(dset.id in ChartInstances)) {
-                        const chartid = 'chart-' + dset.id;
-                        const parent = document.getElementById('chart-holder');
-                        const child = document.createElement('canvas');
-                        child.setAttribute('id', chartid);
-                        parent.appendChild(child);
-                        ChartInstances[dset.id] = chartid;
-                        this.chartDrawing(chartid, didx);
-                    }
-                }
-            },
-            deep: true
-        }
+        // datasets: {
+        //     handler: function() {
+        //         for (var didx = 0; didx < this.datasets.length; didx++) {
+        //             const dset = this.datasets[didx];
+        //             if (!(dset.id in ChartInstances)) {
+        //                 const chartid = 'chart-' + dset.id;
+        //                 const parent = document.getElementById('chart-holder');
+        //                 const child = document.createElement('canvas');
+        //                 child.setAttribute('id', chartid);
+        //                 parent.appendChild(child);
+        //                 ChartInstances[dset.id] = chartid;
+        //                 this.chartDrawing(chartid, didx);
+        //             }
+        //         }
+        //     },
+        //     deep: true
+        // }
     },
     methods: {
         addCluster: function() {
@@ -440,8 +440,6 @@ const ControlPanel = new Vue({
                 requestAnimationFrame((ts) => loop(ts));
             };
 
-            // drawChart(1);
-            // this.chartDrawing('c1', 0);
             requestAnimationFrame((ts) => loop(ts));
         }
     },
