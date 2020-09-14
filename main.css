@@ -65,10 +65,10 @@ canvas {
   right: 15px;
 }
 
-.status-panel {
+.chart-panel {
   position: absolute;
-  bottom: 15px;
-  left: 15px;
+  top: 45px;
+  right: 15px;
 }
 
 .control-panel-bottom {

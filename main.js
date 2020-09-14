@@ -241,11 +241,17 @@ const ControlPanel = new Vue({
         chartDrawing: function(eid, didx) {
             const canvas = document.getElementById(eid);
             const context = canvas.getContext("2d")
-            console.log(this.datasets, eid, didx, this.datasets[didx], this.datasets[didx].data)
             const onRefresh = (chart) => {
                 if (chart.data.datasets[didx] === undefined) {
                     // Potencially dangerous?
-                    chart.data.datasets.push({ data: [] });
+                    chart.data.datasets.push({
+                        id: ControlPanel.datasets[didx].id,
+                        label: ControlPanel.datasets[didx].label,
+                        borderColor: ControlPanel.datasets[didx].color,
+                        fill: false,
+                        cubicInterpolationMode: 'monotone',
+                        data: []
+                    });
                 }
                 chart.data.datasets[didx].data.push({
                     x: Date.now(),
