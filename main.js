@@ -240,10 +240,9 @@ const ControlPanel = new Vue({
         },
         chartDrawing: function(eid, didx) {
             const canvas = document.getElementById(eid);
-            const context = canvas.getContext("2d")
+            const context = canvas.getContext("2d");
             const onRefresh = (chart) => {
-                if (chart.data.datasets[didx] === undefined) {
-                    // Potencially dangerous?
+                if (chart.data.datasets[0] === undefined) {
                     chart.data.datasets.push({
                         id: ControlPanel.datasets[didx].id,
                         label: ControlPanel.datasets[didx].label,
@@ -253,7 +252,7 @@ const ControlPanel = new Vue({
                         data: []
                     });
                 }
-                chart.data.datasets[didx].data.push({
+                chart.data.datasets[0].data.push({
                     x: Date.now(),
                     y: ControlPanel.datasets[didx].data.pop()
                 });
@@ -340,7 +339,7 @@ const ControlPanel = new Vue({
                         sum += d;
                     }
                 }
-                const ave = 2 * sum / ( nodes.length * (nodes.length));
+                const ave = 2 * sum / ( nodes.length * (nodes.length - 1));
                 return {min: min, max: max, ave: ave};
             }
 
@@ -351,7 +350,7 @@ const ControlPanel = new Vue({
                     y: degrees(cluster.nodes).ave
                 };
                 for (var dataset of this.datasets) {
-                    if (dataset.id != cdef.id) continue;
+                    if (dataset.id != cdef.id) continue ;
                     if (dataset.data.length >= buffersize) dataset.data.pop();
                     dataset.data.push(data);
                     return;
@@ -372,6 +371,7 @@ const ControlPanel = new Vue({
                 var draw_buf = [];
 
                 const draw_nodes = (cluster, cdef) => {
+                    if (!cdef.visible) return ;
                     const nodes = cluster.nodes;
                     for (var node of nodes) {
                         context.beginPath();
@@ -385,11 +385,12 @@ const ControlPanel = new Vue({
                     const nodes = cluster.nodes;
                     const radius_s = cdef.radiusStable;
                     const radius_u = cdef.radiusUnstable;
-                    if (!cdef.drawEdges) return;
+                    if (!cdef.drawEdges) return ;
                     var edges_all = []
                     if (cdef.superNode) edges_all = sup_edges(nodes, all_nodes, radius_s, radius_u);
                     else edges_all = edges(nodes, radius_s, radius_u);
                     updateDatasets(cluster, cdef);
+                    if (!cdef.visible) return ;
                     context.setLineDash([]);
                     for (var edge of edges_all) {
                         for (var e of edge) {
@@ -426,9 +427,9 @@ const ControlPanel = new Vue({
                     const cluster = ClusterInstances[cid];
                     const nodes = cluster.step(delta);
                     for (var node of nodes) node.clearNeighbors();
-                    if (cdef.visible) all_nodes.push(nodes);
-                    if (cdef.visible && cdef.superNode) sup_clusters.push([cluster, cdef]);
-                    if (cdef.visible && !cdef.sup_clusters) draw_buf.push([cluster, cdef]);
+                    all_nodes.push(nodes);
+                    if (cdef.superNode) sup_clusters.push([cluster, cdef]);
+                    else draw_buf.push([cluster, cdef]);
                 }
 
                 for (var sup_cluster of sup_clusters) {
