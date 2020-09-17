@@ -210,8 +210,10 @@ const ControlPanel = new Vue({
         },
         datasets: {
             handler: function() {
+                var dsetids = []
                 for (var didx = 0; didx < this.datasets.length; didx++) {
                     const dset = this.datasets[didx];
+                    dsetids.push(dset.id);
                     if (!(dset.id in ChartInstances)) {
                         const chartid = 'chart-' + dset.id;
                         const parent = $('#chart-holder');
@@ -219,16 +221,26 @@ const ControlPanel = new Vue({
                         if (parent.children().length == 0) {
                             parent.append(me);
                         } else {
-                            for (var sibling of parent.children()) {
+                            const siblings = parent.children();
+                            for (var i = 0; i < siblings.length; i++) {
+                                const sibling = siblings[i];
                                 const siblingid = Number($(sibling).attr('id').slice(6));
-                                console.log(siblingid, dset.id, siblingid < dset.id)
-                                if (dset.id > siblingid) continue ;
-                                $(sibling).before(me)
+                                if (dset.id > siblingid && i < siblings.length - 1) continue ;
+                                if (dset.id < siblingid) $(sibling).before(me);
+                                else $(sibling).after(me);
                                 break
                             }
                         }
                         ChartInstances[dset.id] = chartid;
                         this.chartDrawing(chartid, didx);
+                    }
+                }
+                for (var dsetid  of Object.keys(ChartInstances)) {
+                    if (!dsetids.includes(Number(dsetid))) {
+                        const chartid = 'chart-' + dsetid;
+                        console.log(chartid, dsetid)
+                        $('#' + chartid).remove();
+                        delete ChartInstances[dsetid];
                     }
                 }
             },
@@ -247,6 +259,12 @@ const ControlPanel = new Vue({
         deleteCluster: function(event) {
             const targetid = event.target.dataset.cid;
             this.clusterDefines = this.clusterDefines.filter(c => c.id != targetid);
+        },
+        showChart: function(chartid) {
+            $('#chart-' + chartid).removeClass('d-none');
+        },
+        hideChart: function(chartid) {
+            $('#chart-' + chartid).addClass('d-none');
         },
         chartDrawing: function(eid, didx) {
             const canvas = document.getElementById(eid);
@@ -395,7 +413,11 @@ const ControlPanel = new Vue({
                     const nodes = cluster.nodes;
                     const radius_s = cdef.radiusStable;
                     const radius_u = cdef.radiusUnstable;
-                    if (!cdef.drawEdges) return ;
+                    if (!cdef.drawEdges) {
+                        this.hideChart(cdef.id);
+                        return;
+                    }
+                    this.showChart(cdef.id);
                     var edges_all = []
                     if (cdef.superNode) edges_all = sup_edges(nodes, all_nodes, radius_s, radius_u);
                     else edges_all = edges(nodes, radius_s, radius_u);
