@@ -217,7 +217,7 @@ const ControlPanel = new Vue({
                     if (!(dset.id in ChartInstances)) {
                         const chartid = 'chart-' + dset.id;
                         const parent = $('#chart-holder');
-                        const me = $('<canvas></canvas>').attr('id', chartid);
+                        const me = $('<canvas></canvas>').attr('id', chartid).addClass('chart-canvas');
                         if (parent.children().length == 0) {
                             parent.append(me);
                         } else {
@@ -298,7 +298,8 @@ const ControlPanel = new Vue({
                         animationDuration: 0
                     },
                     responsiveAnimationDuration: 0,
-                    legend: { position: 'bottom' },
+                    legend: { display: false },
+                    title: { display: false },
                     scales: {
                         xAxes: [{
                             display: false,
