@@ -5,6 +5,7 @@ class Vector2 {
         this.x = x;
         this.y = y;
     }
+    // ToDo: Performance bottleneck (instance members initializer)
     add = (v) => new Vector2(this.x + v.x, this.y + v.y);
     sub = (v) => new Vector2(this.x - v.x, this.y - v.y);
     scalar = (a) => new Vector2(this.x * a, this.y * a);
@@ -213,10 +214,19 @@ const ControlPanel = new Vue({
                     const dset = this.datasets[didx];
                     if (!(dset.id in ChartInstances)) {
                         const chartid = 'chart-' + dset.id;
-                        const parent = document.getElementById('chart-holder');
-                        const child = document.createElement('canvas');
-                        child.setAttribute('id', chartid);
-                        parent.appendChild(child);
+                        const parent = $('#chart-holder');
+                        const me = $('<canvas></canvas>').attr('id', chartid);
+                        if (parent.children().length == 0) {
+                            parent.append(me);
+                        } else {
+                            for (var sibling of parent.children()) {
+                                const siblingid = Number($(sibling).attr('id').slice(6));
+                                console.log(siblingid, dset.id, siblingid < dset.id)
+                                if (dset.id > siblingid) continue ;
+                                $(sibling).before(me)
+                                break
+                            }
+                        }
                         ChartInstances[dset.id] = chartid;
                         this.chartDrawing(chartid, didx);
                     }
