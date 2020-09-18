@@ -442,8 +442,12 @@ const ControlPanel = new Vue({
                 const draw = () => {
                     context.clearRect(0, 0, canvas.width, canvas.height);
                     if (draw_buf.length == 0) return ;
-                    canvas.width = window.innerWidth;
-                    canvas.height = window.innerHeight;
+                    // canvas.width = window.innerWidth;
+                    // canvas.height = window.innerHeight;
+                    canvas.width = $(window).width();
+                    canvas.height = $(window).height();
+                    // canvas.width = $('#showcase-wrapper').width();
+                    // canvas.height = $('#showcase-wrapper').height();
                     const drawers = [draw_edges, draw_nodes];
                     for (var drawer of drawers) {
                         for (var req of draw_buf) {
