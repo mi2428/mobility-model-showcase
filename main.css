@@ -5,7 +5,8 @@
   --canvas-border-color: #ff3535;
   --black: #212529;
   --font-small: 13px;
-  --chart-width: 420px;
+  --ctrl-panel-top-width: 380px;
+  --chart-width: 380px;
 }
 
 .w-30 {
@@ -87,7 +88,7 @@ body {
 }
 
 .control-panel-top {
-  width: 380px;
+  width: var(--ctrl-panel-top-width);
 }
 
 .clock-panel {
