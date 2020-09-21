@@ -218,7 +218,14 @@ const ControlPanel = new Vue({
                     if (!(dset.id in ChartInstances)) {
                         const chartid = 'chart-' + dset.id;
                         const parent = $('#chart-holder');
-                        const me = $('<canvas></canvas>').attr('id', chartid).addClass('chart-canvas');
+                        const me = $('<div></div>').attr('id', chartid).addClass('card');
+                        const mycardheader = $('<div></div>').addClass('chart-header').addClass('bg-transparent');
+                        const myheader = $('<h1>Average degree of Cluster #' + dset.id + '</h1>').addClass('sf');
+                        const mycardbody = $('<div></div>').addClass('card-body');
+                        const mycanvas = $('<canvas></canvas>').attr('id', chartid + '-canvas').addClass('chart-canvas');
+                        mycardheader.append(myheader);
+                        mycardbody.append(mycanvas);
+                        me.append(mycardheader).append(mycardbody);
                         if (parent.children().length == 0) {
                             parent.append(me);
                         } else {
@@ -233,7 +240,7 @@ const ControlPanel = new Vue({
                             }
                         }
                         ChartInstances[dset.id] = chartid;
-                        this.chartDrawing(chartid, didx);
+                        this.chartDrawing(chartid + '-canvas', didx);
                     }
                 }
                 for (var dsetid  of Object.keys(ChartInstances)) {

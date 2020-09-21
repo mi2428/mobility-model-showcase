@@ -2,6 +2,10 @@
   --corner-margin: 10px;
   --ctrl-panel-op: 0.1;
   --chart-panel-op: 0.3;
+  --canvas-border-color: #ff3535;
+  --black: #212529;
+  --font-small: 13px;
+  --chart-width: 420px;
 }
 
 .w-30 {
@@ -31,7 +35,7 @@
 }
 
 .sf {
-  font-size: 13px;
+  font-size: var(--font-small);
   margin: 0;
   padding: 0;
 }
@@ -58,6 +62,10 @@ body {
   border-bottom: none;
 }
 
+.card-header .btn-link {
+  color: var(--black);
+}
+
 .card-body {
   padding: 0 5px 5px 5px;
 }
@@ -71,6 +79,7 @@ body {
 .control-panel {
   margin: 15px;
   opacity: var(--ctrl-panel-op);
+  z-index: 100;
 }
 
 .control-panel:hover {
@@ -84,12 +93,17 @@ body {
 .clock-panel {
   position: absolute;
   top: var(--corner-margin);
-  right: var(--corner-margin);
+  right: 0;
+  left: 0;
+  margin-right: auto;
+  margin-left: auto;
+  text-align: center;
+  z-index: 1;
 }
 
 .chart-panel {
   position: absolute;
-  top: calc(var(--corner-margin) + 30px);
+  top: var(--corner-margin);
   right: var(--corner-margin);
 }
 
@@ -113,27 +127,30 @@ body {
 .chart-panel {
   opacity: var(--chart-panel-op);
   padding: 5px;
+  z-index: 100;
 }
 
 .chart-panel:hover {
   opacity: 0.9;
 }
 
+.chart-header {
+  padding: 5px;
+}
+
 .chart-canvas {
-  padding: 0 5px 0 5px;
-  margin: 20px 0 20px 0;
+  margin: 10px 0 10px 0;
   height: 180px;
-  width: 420px;
+  width: var(--chart-width);
 }
 
 #showcase-wrapper {
   width: 100%;
   height: 100%;
-  padding: auto;
 }
 
 #showcase {
   box-sizing: border-box;
-  margin: auto;
-  border: 1px dashed #ff6868;
+  border: 1px dashed var(--canvas-border-color);
+  opacity: 0.6;
 }

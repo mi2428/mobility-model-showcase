@@ -104,20 +104,14 @@
         <div class="clock-panel m-0">
           <!-- template begin -->
           <template>
-            <div class="card border-0">
+            <div class="card bg-transparent border-0">
               <div class="card-body py-0 sf" v-model="currentTime"> +{{ currentTime }} </div>
             </div>
           </template>
           <!-- template end -->
         </div>
 
-        <div class="chart-panel m-0">
-          <!-- template begin -->
-            <div class="card">
-              <div id="chart-holder" class="card-body"></div>
-            </div>
-          <!-- template end -->
-        </div>
+        <div id="chart-holder" class="chart-panel m-0"></div>
 
         <div class="control-panel-bottom control-panel m-0 op-1">
           <!-- template begin -->
