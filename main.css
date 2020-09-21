@@ -1,8 +1,7 @@
-body {
-  background-color: #FFF;
-  background-image: linear-gradient( transparent 95%, rgba(0, 0, 0, .06) 50%, rgba(0, 0, 0, .06)), linear-gradient( 90deg, transparent 95%, rgba(0, 0, 0, .06) 50%, rgba(0, 0, 0, .06) );
-  background-size: 16px 16px;
-  background-repeat: repeat;
+:root {
+  --corner-margin: 10px;
+  --ctrl-panel-op: 0.1;
+  --chart-panel-op: 0.3;
 }
 
 .w-30 {
@@ -15,13 +14,39 @@ body {
   max-width: 40% !important;
 }
 
-.container {
+.ta-left {
+  text-align: left;
+}
+
+.ta-center {
+  text-align: center;
+}
+
+.ta-right {
+  text-align: right;
+}
+
+.op-1 {
+  opacity: 1 !important;
+}
+
+.sf {
+  font-size: 13px;
   margin: 0;
   padding: 0;
 }
 
-.control-panel {
-  margin: 15px;
+body {
+  background-color: #FFF;
+  background-image: linear-gradient( transparent 95%, rgba(0, 0, 0, .06) 50%, rgba(0, 0, 0, .06)), linear-gradient( 90deg, transparent 95%, rgba(0, 0, 0, .06) 50%, rgba(0, 0, 0, .06) );
+  background-size: 16px 16px;
+  background-repeat: repeat;
+  font-family: monospace;
+}
+
+.container {
+  margin: 0;
+  padding: 0;
 }
 
 .card {
@@ -43,50 +68,41 @@ body {
   padding-right: 5px;
 }
 
-.control-panel-top {
-  width: 380px;
-}
-
 .control-panel {
-  opacity: 0.1;
+  margin: 15px;
+  opacity: var(--ctrl-panel-op);
 }
 
 .control-panel:hover {
   opacity: 0.9;
 }
 
+.control-panel-top {
+  width: 380px;
+}
+
 .clock-panel {
   position: absolute;
-  top: 15px;
-  right: 15px;
+  top: var(--corner-margin);
+  right: var(--corner-margin);
 }
 
 .chart-panel {
   position: absolute;
-  top: 45px;
-  right: 15px;
+  top: calc(var(--corner-margin) + 30px);
+  right: var(--corner-margin);
 }
 
 .control-panel-bottom {
+  width: 500px;
   position: absolute;
-  bottom: 15px;
-  right: 15px;
-  width: 440px;
-}
-
-.op-1 {
-  opacity: 1 !important;
+  bottom: var(--corner-margin);
+  right: var(--corner-margin);
 }
 
 #add-cluster-btn {
-  width: 370px;
+  width: 380px;
   margin: 5px;
-}
-
-.sf {
-  font-size: 13px;
-  margin: 0;
-  padding: 0;
 }
 
 .custom-select, .form-control {
@@ -95,7 +111,7 @@ body {
 }
 
 .chart-panel {
-  opacity: 0.3;
+  opacity: var(--chart-panel-op);
   padding: 5px;
 }
 
