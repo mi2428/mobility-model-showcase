@@ -5,14 +5,13 @@ class Vector2 {
         this.x = x;
         this.y = y;
     }
-    // ToDo: Performance bottleneck (instance members initializer)
     add = (v) => new Vector2(this.x + v.x, this.y + v.y);
     sub = (v) => new Vector2(this.x - v.x, this.y - v.y);
     scalar = (a) => new Vector2(this.x * a, this.y * a);
 };
 
 const l2norm = (v) => Math.sqrt(v.x ** 2 + v.y ** 2);
-const distance = (v1, v2) => l2norm(v2.sub(v1));
+const distance = (v1, v2) => l2norm({x: v1.x - v2.x, y: v1.y - v2.y});
 const rand = (min, max) => Math.random() * (max - min) + min;
 const randvec = (x_min, x_max, y_min, y_max) => new Vector2(rand(x_min, x_max), rand(y_min, y_max));
 
@@ -404,12 +403,12 @@ const ControlPanel = new Vue({
                 canvas.height = this.fieldHeight * this.fieldScale;
 
                 if (canvas.width < canvas_wrapper.width) {
-                    const p = (canvas_wrapper.width - canvas.width) / 2;
+                    const p = Math.floor((canvas_wrapper.width - canvas.width - 2) / 2);
                     $(canvas).css({'margin-left': p + 'px', 'margin-right': p + 'px'});
                 }
 
                 if (canvas.height < canvas_wrapper.height) {
-                    const p = (canvas_wrapper.height - canvas.height) / 2;
+                    const p = Math.floor((canvas_wrapper.height - canvas.height - 2 - 6) / 2);
                     $(canvas).css({'margin-top': p + 'px', 'margin-bottom': p + 'px'});
                 }
             };
@@ -432,8 +431,8 @@ const ControlPanel = new Vue({
 
                 const draw_edges = (cluster, cdef) => {
                     const nodes = cluster.nodes;
-                    const radius_s = cdef.radiusStable;
-                    const radius_u = cdef.radiusUnstable;
+                    const radius_s = cdef.radiusStable * cdef.fieldScale;
+                    const radius_u = cdef.radiusUnstable * cdef.fieldScale;
                     if (!cdef.drawEdges) {
                         this.hideChart(cdef.id);
                         return;
@@ -497,8 +496,8 @@ const ControlPanel = new Vue({
         }
     },
     mounted: function() {
-        this.fieldWidth = $(window).width();
-        this.fieldHeight = $(window).height();
+        this.fieldWidth = Math.round($(window).width() * 0.9);
+        this.fieldHeight = Math.round($(window).height() * 0.9);
 
         if (this.fieldHeight < this.fieldWidth) this.fieldWidth = this.fieldHeight;
         if (this.fieldWidth < this.fieldHeight) this.fieldHeight = this.fieldWidth;
