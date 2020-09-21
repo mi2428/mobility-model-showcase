@@ -295,7 +295,13 @@ const ControlPanel = new Vue({
             };
             const chart = new Chart(context, {
                 type: 'line',
-                data: { datasets: [{ data: [] }] },
+                data: { datasets: [{
+                    borderWidth: 1,
+                    pointRadius: 2,
+                    borderColor: '#212529',
+                    pointColor: '#212529',
+                    data: [] 
+                }] },
                 options: {
                     responsive: false,
                     maintainAspectRatio: false,
