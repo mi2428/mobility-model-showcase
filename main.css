@@ -71,7 +71,7 @@ body {
   position: absolute;
   bottom: 15px;
   right: 15px;
-  width: 310px;
+  width: 440px;
 }
 
 .op-1 {
@@ -119,4 +119,5 @@ body {
 #showcase {
   box-sizing: border-box;
   margin: auto;
+  border: 1px dashed #ff6868;
 }

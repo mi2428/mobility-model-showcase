@@ -123,7 +123,7 @@ const MODEL = {
     RPGMModel: { id: 2, name: "Reference Point Group Mobility" },
 }
 
-const NewClusterDefine = (cid, field_width, field_height) => {
+const NewClusterDefine = (cid, field_width, field_height, field_scale) => {
     const color = '#' + ( 0x1000000 + Math.random() * 0xffffff ).toString(16).substr(1,6);
     const cdef = {
         id: cid,
@@ -143,6 +143,7 @@ const NewClusterDefine = (cid, field_width, field_height) => {
         color: color,
         fieldWidth: field_width,
         fieldHeight: field_height,
+        fieldScale: field_scale,
         chartCanvasId: "", 
     };
     return cdef;
@@ -153,8 +154,8 @@ const GetModelParams = (cdef) => {
         case MODEL.RandomWaypointModel.id:
             return {
                 n_nodes: cdef.numOfNodes,
-                field_size: { x: cdef.fieldWidth, y: cdef.fieldHeight },
-                speed_limit: { min: cdef.speedMin, max: cdef.speedMax },
+                field_size: { x: cdef.fieldWidth * cdef.fieldScale, y: cdef.fieldHeight * cdef.fieldScale },
+                speed_limit: { min: cdef.speedMin * cdef.fieldScale, max: cdef.speedMax * cdef.fieldScale },
                 coffeebreak_limit: { min: cdef.coffeebreakMin, max: cdef.coffeebreakMax }
             };
         case MODEL.RPGMModel.id:
@@ -182,6 +183,7 @@ const ControlPanel = new Vue({
         models: MODEL,
         fieldWidth: 1000,
         fieldHeight: 1000,
+        fieldScale: 1.0,
         currentTime: "0.0",
         datasets: [],
     },
@@ -249,7 +251,7 @@ const ControlPanel = new Vue({
     },
     methods: {
         addCluster: function() {
-            this.clusterDefines.push(NewClusterDefine(this.nextId++, this.fieldWidth, this.fieldHeight));
+            this.clusterDefines.push(NewClusterDefine(this.nextId++, this.fieldWidth, this.fieldHeight, this.fieldScale));
         },
         getCluster: function(cid) {
             for (var cdef of this.clusterDefines)
@@ -398,8 +400,8 @@ const ControlPanel = new Vue({
             const updateCanvasSize = () => {
                 canvas_wrapper.width = $(window).width();
                 canvas_wrapper.height = $(window).height();
-                canvas.width = this.fieldWidth;
-                canvas.height = this.fieldHeight;
+                canvas.width = this.fieldWidth * this.fieldScale;
+                canvas.height = this.fieldHeight * this.fieldScale;
 
                 if (canvas.width < canvas_wrapper.width) {
                     const p = (canvas_wrapper.width - canvas.width) / 2;
