@@ -123,7 +123,7 @@ const MODEL = {
     RPGMModel: { id: 2, name: "Reference Point Group Mobility" },
 }
 
-const NewClusterDefine = (cid) => {
+const NewClusterDefine = (cid, field_width, field_height) => {
     const color = '#' + ( 0x1000000 + Math.random() * 0xffffff ).toString(16).substr(1,6);
     const cdef = {
         id: cid,
@@ -141,8 +141,8 @@ const NewClusterDefine = (cid) => {
         nodeSize: 13,
         edgeWidth: 2,
         color: color,
-        fieldWidth: window.innerWidth,
-        fieldHeight: window.innerHeight,
+        fieldWidth: field_width,
+        fieldHeight: field_height,
         chartCanvasId: "", 
     };
     return cdef;
@@ -249,7 +249,7 @@ const ControlPanel = new Vue({
     },
     methods: {
         addCluster: function() {
-            this.clusterDefines.push(NewClusterDefine(this.nextId++));
+            this.clusterDefines.push(NewClusterDefine(this.nextId++, this.fieldWidth, this.fieldHeight));
         },
         getCluster: function(cid) {
             for (var cdef of this.clusterDefines)
@@ -315,6 +315,7 @@ const ControlPanel = new Vue({
         showcaseDrawing: function() {
             const delta = 0.1;
             const canvas = document.getElementById('showcase');
+            const canvas_wrapper = document.getElementById('showcase-wrapper');
             const context = canvas.getContext("2d");
 
             const edges = (nodes, radius_s, radius_u) => {
@@ -394,6 +395,23 @@ const ControlPanel = new Vue({
                 })
             };
 
+            const updateCanvasSize = () => {
+                canvas_wrapper.width = $(window).width();
+                canvas_wrapper.height = $(window).height();
+                canvas.width = this.fieldWidth;
+                canvas.height = this.fieldHeight;
+
+                if (canvas.width < canvas_wrapper.width) {
+                    const p = (canvas_wrapper.width - canvas.width) / 2;
+                    $(canvas).css({'margin-left': p + 'px', 'margin-right': p + 'px'});
+                }
+
+                if (canvas.height < canvas_wrapper.height) {
+                    const p = (canvas_wrapper.height - canvas.height) / 2;
+                    $(canvas).css({'margin-top': p + 'px', 'margin-bottom': p + 'px'});
+                }
+            };
+
             const loop = (timestamp) => {
                 var sup_clusters = [];
                 var all_nodes = [];
@@ -442,12 +460,6 @@ const ControlPanel = new Vue({
                 const draw = () => {
                     context.clearRect(0, 0, canvas.width, canvas.height);
                     if (draw_buf.length == 0) return ;
-                    // canvas.width = window.innerWidth;
-                    // canvas.height = window.innerHeight;
-                    canvas.width = $(window).width();
-                    canvas.height = $(window).height();
-                    // canvas.width = $('#showcase-wrapper').width();
-                    // canvas.height = $('#showcase-wrapper').height();
                     const drawers = [draw_edges, draw_nodes];
                     for (var drawer of drawers) {
                         for (var req of draw_buf) {
@@ -474,6 +486,7 @@ const ControlPanel = new Vue({
                     draw_buf.push([cluster, cdef]);
                 }
 
+                updateCanvasSize();
                 draw();
                 requestAnimationFrame((ts) => loop(ts));
             };
@@ -482,6 +495,12 @@ const ControlPanel = new Vue({
         }
     },
     mounted: function() {
+        this.fieldWidth = $(window).width();
+        this.fieldHeight = $(window).height();
+
+        if (this.fieldHeight < this.fieldWidth) this.fieldWidth = this.fieldHeight;
+        if (this.fieldWidth < this.fieldHeight) this.fieldHeight = this.fieldWidth;
+
         this.showcaseDrawing();
     }
 });
