@@ -128,6 +128,7 @@ const NewClusterDefine = (cid, field_width, field_height, field_scale) => {
         id: cid,
         model: MODEL.RandomWaypointModel.id,
         numOfNodes: 30,
+        groupRadius: 100,
         speedMax: 10,
         speedMin: 1,
         coffeebreakMax: 10,

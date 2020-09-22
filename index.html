@@ -32,6 +32,11 @@
                   <input class="form-control col-md-6 sf" name="range" type="range" min="1" max="100" step="1" v-model.number="cluster.numOfNodes">
                   <input class="form-control col-md-2 sf" name="number" type="number" min="1" max="999" step="1" :data-cid="cluster.id" v-model.number="cluster.numOfNodes">
                 </form>
+                <form class="form-inline" v-if="cluster.model == MODEL.RPGMModel.id">
+                  <label class="form-control-label col-md-4 sf">Radius of group</label>
+                  <input class="form-control col-md-6 sf" name="range" type="range" min="0" max="250" step="1" v-model.number="cluster.groupRadius">
+                  <input class="form-control col-md-2 sf" name="number" type="number" min="0" max="999" step="1" :data-cid="cluster.id" v-model.number="cluster.groupRadius">
+                </form>
                 <form class="form-inline">
                   <label class="form-control-label col-md-4 sf">Max. speed</label>
                   <input class="form-control col-md-6 sf" name="range" type="range" min="1" max="20" step="0.1" v-model.number="cluster.speedMax">
