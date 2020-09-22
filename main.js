@@ -122,7 +122,6 @@ class RandomWaypointModel {
 class RPGMModel {
     constructor(params) {
         this.model = MODEL.RPGMModel.id;
-        this.rp = new Node(this._rand_rp_loc(), this._rand_rp_spd(), this._rand_rp_loc());
         this.nodes = [];
         this.reset(params);
         this.dt = 0.1;
@@ -154,7 +153,7 @@ class RPGMModel {
     _set_new_journey() {
         const next_rp_loc = this._rand_rp_loc();
         const next_rp_spd = this._rand_rp_spd();
-        const req_time = distance(this.rp_loc, next_rp_loc) / next_rp_spd;
+        const req_time = distance(this.rp.dest, next_rp_loc) / next_rp_spd;
         for (var node of this.nodes) {
             const next_node_loc = this._rand_pt_loc(next_rp_loc);
             const next_node_spd = distance(node.pos, next_node_loc) / req_time;
@@ -181,6 +180,14 @@ class RPGMModel {
         this.field_size = params.field_size;
         this.coffeebreak_limit = params.coffeebreak_limit;
         this.group_radius = params.group_radius;
+
+        if (this.speed_limit === undefined) {
+            this.speed_limit = params.speed_limit;
+        }
+
+        if (this.rp === undefined) {
+            this.rp = new Node(this._rand_rp_loc(), this._rand_rp_spd(), this._rand_rp_loc());
+        }
 
         if (this.speed_limit != params.speed_limit) {
             this.speed_limit = params.speed_limit;
