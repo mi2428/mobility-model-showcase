@@ -353,7 +353,6 @@ const ControlPanel = new Vue({
                 for (var dsetid  of Object.keys(ChartInstances)) {
                     if (!dsetids.includes(Number(dsetid))) {
                         const chartid = 'chart-' + dsetid;
-                        console.log(chartid, dsetid)
                         $('#' + chartid).remove();
                         delete ChartInstances[dsetid];
                     }
