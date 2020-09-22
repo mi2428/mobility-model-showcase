@@ -61,6 +61,7 @@ class Node {
 
 class RandomWaypointModel {
     constructor(params) {
+        this.model = MODEL.RandomWaypointModel.id;
         this.nodes = [];
         this.reset(params);
         this.dt = 0.1;
@@ -120,6 +121,7 @@ class RandomWaypointModel {
 
 class RPGMModel {
     constructor(params) {
+        this.model = MODEL.RPGMModel.id;
         this.rp = new Node(this._rand_rp_loc(), this._rand_rp_spd(), this._rand_rp_loc());
         this.nodes = [];
         this.reset(params);
@@ -243,7 +245,13 @@ const GetModelParams = (cdef) => {
                 coffeebreak_limit: { min: cdef.coffeebreakMin, max: cdef.coffeebreakMax }
             };
         case MODEL.RPGMModel.id:
-            return ;
+            return {
+                n_nodes: cdef.numOfNodes,
+                group_radius: cdef.groupRadius,
+                field_size: { x: cdef.fieldWidth * cdef.fieldScale, y: cdef.fieldHeight * cdef.fieldScale },
+                speed_limit: { min: cdef.speedMin * cdef.fieldScale, max: cdef.speedMax * cdef.fieldScale },
+                coffeebreak_limit: { min: cdef.coffeebreakMin, max: cdef.coffeebreakMax }
+            };
     }
 };
 
@@ -252,7 +260,7 @@ const NewClusterInstance = (cdef) => {
         case MODEL.RandomWaypointModel.id:
             return new RandomWaypointModel(GetModelParams(cdef));
         case MODEL.RPGMModel.id:
-            return ;
+            return new RPGMModel(GetModelParams(cdef));
     }
 };
 
@@ -295,7 +303,8 @@ const ControlPanel = new Vue({
                 }
                 for (var cdef of this.clusterDefines) {
                     const cluster = ClusterInstances[cdef.id];
-                    cluster.reset(GetModelParams(cdef));
+                    if (cluster.model == cdef.model) cluster.reset(GetModelParams(cdef));
+                    else ClusterInstances[cdef.id] = NewClusterInstance(cdef);
                 }
             },
             deep: true
