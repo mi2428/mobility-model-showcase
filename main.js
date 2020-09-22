@@ -37,6 +37,7 @@ class Node {
     }
 
     setVelocity(speed) {
+        this.speed = speed;
         this.velocity = this.dest.sub(this.pos).scalar(speed / distance(this.pos, this.dest));
     }
 
@@ -99,6 +100,89 @@ class RandomWaypointModel {
         if (this.speed_limit != params.speed_limit) {
             this.speed_limit = params.speed_limit;
             for (var node of this.nodes) node.setVelocity(this._randspd());
+        }
+
+        if (this.n_nodes != params.n_nodes) {
+            this.n_nodes = params.n_nodes;
+            this._autoscale();
+        }
+    }
+
+    step(delta) {
+        var c = 0;
+        while (c * this.dt <= delta) {
+            this._update();
+            c += 1;
+        }
+        return this.nodes;
+    }
+}
+
+class RPGMModel {
+    constructor(params) {
+        this.rp = new Node(this._rand_rp_loc(), this._rand_rp_spd(), this._rand_rp_loc());
+        this.nodes = [];
+        this.reset(params);
+        this.dt = 0.1;
+    }
+
+    _rand_rp_spd = () => rand(this.speed_limit.min, this.speed_limit.max);
+    _rand_rp_loc = () => randvec(this.group_radius, this.field_size.x - this.group_radius,
+                                 this.group_radius, this.field_size.y - this.group_radius);
+    _rand_rp_brk = () => rand(this.coffeebreak_limit.min, this.coffeebreak_limit.max);
+    _rand_pt_loc = (rp_loc) => {
+        const dist = rand(0, this.group_radius);
+        const theta = rand(0, 360) * Math.PI / 180;
+        return new Vector2(rp_loc.x + dist * Math.cos(theta), rp_loc.y + dist * Math.sin(theta));
+    };
+
+    _autoscale() {
+        while (this.nodes.length < this.n_nodes) {
+            const pos = this._rand_pt_loc(this.rp.pos);
+            const dest = this._rand_pt_loc(this.rp.dest);
+            const speed = distance(pos, dest) * this.rp.speed / distance(this.rp.pos, this.rp.dest);
+            const node = new Node(pos, speed, dest);
+            this.nodes.push(node);
+        }
+        while (this.nodes.length > this.n_nodes) {
+            delete this.nodes.pop();
+        }
+    }
+
+    _set_new_journey() {
+        const next_rp_loc = this._rand_rp_loc();
+        const next_rp_spd = this._rand_rp_spd();
+        const req_time = distance(this.rp_loc, next_rp_loc) / next_rp_spd;
+        for (var node of this.nodes) {
+            const next_node_loc = this._rand_pt_loc(next_rp_loc);
+            const next_node_spd = distance(node.pos, next_node_loc) / req_time;
+            node.setJourney(next_node_spd, next_node_loc);
+        }
+        this.rp.setJourney(next_rp_spd, next_rp_loc);
+    }
+
+    _update() {
+        switch (this.rp.move(this.dt)) {
+            case RT.CoffeebreakIsOver:
+                this._set_new_journey();
+                break;
+            case RT.Arrived:
+                this.rp.coffeebreak = this._rand_rp_brk();
+                break;
+        }
+        if (this.rp.coffeebreak == 0) {
+            for (var node of this.nodes) node.move(this.dt);
+        }
+    }
+
+    reset(params) {
+        this.field_size = params.field_size;
+        this.coffeebreak_limit = params.coffeebreak_limit;
+        this.group_radius = params.group_radius;
+
+        if (this.speed_limit != params.speed_limit) {
+            this.speed_limit = params.speed_limit;
+            this.rp.setVelocity(this._rand_rp_spd());
         }
 
         if (this.n_nodes != params.n_nodes) {
