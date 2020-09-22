@@ -194,8 +194,14 @@ const ControlPanel = new Vue({
                     if (!(cdef.id in ClusterInstances)) ClusterInstances[cdef.id] = NewClusterInstance(cdef);
                     cdefids.push(cdef.id);
                 }
-                if (cdefids.length == 0) $(".control-panel").addClass("op-1");
-                if (cdefids.length > 0) $(".control-panel").removeClass("op-1");
+                if (cdefids.length == 0) {
+                    $(".control-panel").addClass("op-1");
+                    $(".field-size-control").prop("disabled", false);
+                }
+                if (cdefids.length > 0) {
+                    $(".control-panel").removeClass("op-1");
+                    $(".field-size-control").prop("disabled", true);
+                }
                 for (var cid of Object.keys(ClusterInstances)) {
                     if (!cdefids.includes(Number(cid))) {
                         delete ClusterInstances[cid];
