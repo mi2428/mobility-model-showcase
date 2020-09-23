@@ -5,8 +5,9 @@
   --canvas-border-color: #ff3535;
   --black: #212529;
   --font-small: 13px;
-  --ctrl-panel-top-width: 380px;
-  --chart-width: 380px;
+  --ctrl-panel-top-width: 420px;
+  --ctrl-panel-bottom-width: 560px;
+  --chart-width: 420px;
 }
 
 .w-30 {
@@ -109,7 +110,7 @@ body {
 }
 
 .control-panel-bottom {
-  width: 500px;
+  width: var(--ctrl-panel-bottom-width);
   position: absolute;
   bottom: var(--corner-margin);
   right: var(--corner-margin);
