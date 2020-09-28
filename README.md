@@ -7,7 +7,7 @@ It works, but the code is not as sophisticated as it could be, so use with care 
 
 https://mi2428.github.io/mobility-model-showcase/
 
-## Supported models (TBD)
+## Supported models
 - Random waypoint model
 - Reference point group mobility model (RPGM) [1]
 

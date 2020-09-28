@@ -14,7 +14,7 @@
         <!-- template begin -->
         <div class="control-panel control-panel-top position-absolute float-left op-1">
           <template v-for="cluster in clusterDefines" :keys="cluster.id">
-            <div class="card">
+            <div class="card m-0 mb-1">
               <div class="card-header bg-transparent">
                 <h1 class="sf">Cluster #{{ cluster.id }}<button :data-cid="cluster.id" class="btn btn-link float-right sf" v-on:click="deleteCluster($event)">Delete</button></h1>
               </div>
@@ -116,7 +116,9 @@
           <!-- template end -->
         </div>
 
+        <!--
         <div id="chart-holder" class="chart-panel m-0"></div>
+        -->
 
         <div class="control-panel-bottom control-panel m-0 op-1">
           <!-- template begin -->
@@ -126,15 +128,15 @@
                 <form class="form-inline">
                   <div class="d-inline-block col-md-4 p-0 ta-left">
                     <label class="form-control-label sf">Field width</label>
-                    <input class="form-control field-size-control sf w-40" name="number" type="number" min="1" max="9999" step="1" v-model.number="fieldWidth">
+                    <input class="form-control field-size-control sf w-30" name="number" type="number" min="1" max="9999" step="1" v-model.number="fieldWidth">
                   </div>
                   <div class="d-inline-block col-md-4 p-0 ta-center">
                     <label class="form-control-label sf">Field height</label>
-                    <input class="form-control field-size-control sf w-40" name="number" type="number" min="1" max="9999" step="1" v-model.number="fieldHeight">
+                    <input class="form-control field-size-control sf w-30" name="number" type="number" min="1" max="9999" step="1" v-model.number="fieldHeight">
                   </div>
                   <div class="d-inline-block col-md-4 p-0 ta-right">
                     <label class="form-control-label sf">Field scale</label>
-                    <input class="form-control field-size-control sf w-40" name="number" type="number" min="0.1" max="10.0" step="0.1" v-model.number="fieldScale">
+                    <input class="form-control field-size-control sf w-30" name="number" type="number" min="0.1" max="10.0" step="0.1" v-model.number="fieldScale">
                   </div>
                 </form>
               </div>
@@ -154,9 +156,11 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js" integrity="sha512-rmZcZsyhe0/MAjquhTgiUcb4d9knaFc7b5xAfju483gbEXTkeJRUMIPk6s3ySZMYUHEcjKbjLjyddGWMrNEvZg==" crossorigin="anonymous"></script>
+    <!--
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
     <script src="https://unpkg.com/vue-chartjs/dist/vue-chartjs.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-streaming@latest/dist/chartjs-plugin-streaming.min.js"></script>
+    -->
     <script src="main.js"></script>
   </body>
 </html>
