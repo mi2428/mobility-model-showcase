@@ -14,7 +14,7 @@
         <!-- template begin -->
         <div class="control-panel control-panel-top position-absolute float-left op-1">
           <template v-for="cluster in clusterDefines" :keys="cluster.id">
-            <div class="card">
+            <div class="card m-0 mb-1">
               <div class="card-header bg-transparent">
                 <h1 class="sf">Cluster #{{ cluster.id }}<button :data-cid="cluster.id" class="btn btn-link float-right sf" v-on:click="deleteCluster($event)">Delete</button></h1>
               </div>

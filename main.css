@@ -116,8 +116,8 @@ body {
 }
 
 #add-cluster-btn {
-  width: 380px;
-  margin: 5px;
+  width: var(--ctrl-panel-top-width);
+  margin: 5px 0 0 0;
 }
 
 .custom-select, .form-control {
